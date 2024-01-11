@@ -1,0 +1,35 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+.app-shell {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+}
+
+.tab-bar {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    background-color: #007BFF;
+    color: white;
+    height: 50px;
+}
+
+.tab-bar a {
+    text-decoration: none;
+    color: white;
+}
+
+.tab-bar img {
+    width: 30px;
+    height: 30px;
+}
+
+.content {
+    flex-grow: 1;
+    overflow-y: auto;
+}
