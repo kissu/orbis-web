@@ -1,103 +1,98 @@
 <template>
-    <VerticalStackLayout :margin="{ left: 20, right: 20 }"
-                        horizontalOptions="center"
-                        verticalOptions="center">
-  
-      <Label text="Username" fontSize="16"
-             horizontalOptions="center" 
-             :textColor="isDarkTheme ? 'white' : 'black'" />
-      <Entry ref="usernameEntry" placeholder="Enter your username" v-model="username"
-             horizontalOptions="center" 
-             :textColor="isDarkTheme ? 'white' : 'black'" />
-  
-      <Label text="Email" fontSize="16"
-             horizontalOptions="center" 
-             :textColor="isDarkTheme ? 'white' : 'black'" />
-      <Entry ref="emailEntry" placeholder="Enter your email" v-model="email"
-             horizontalOptions="center"
-             :textColor="isDarkTheme ? 'white' : 'black'" />
-  
-      <Label :textColor="isDarkTheme ? 'white' : 'black'" 
-             margin="0,10,0,0"
-             text="Created from : "
-             horizontalOptions="center"/>
-  
-      <Label :textColor="isDarkTheme ? 'white' : 'black'" 
-             :text="createdDateFormatted"
-             horizontalOptions="center"/>
-  
-      <SKLottieView ref="loadingView"
-                    source="Loading.json"
-                    repeatCount="-1"
-                    heightRequest="250"
-                    widthRequest="250"
-                    horizontalOptions="center" 
-                    verticalOptions="center"
-                    :isVisible="false">
-      </SKLottieView>
-  
-      <Button :cornerRadius="25"
-              grid-column-span="2" 
-              grid-row="7" 
-              margin="0,35,0,0"  
-              ref="save" 
-              text="Save" 
-              heightRequest="50" 
-              verticalOptions="centerAndExpand" 
-              widthRequest="300"
-              @click="saveClicked" 
-              :textColor="isDarkTheme ? 'white' : 'black'" 
-              fontSize="body">
-        <Button.Background>
-          <LinearGradientBrush startPoint="0,0" endPoint="1,0">
-            <GradientStop offset="0" color="#FF8C00" />
-            <GradientStop offset="1" color="#FFD700" />
-          </LinearGradientBrush>
-        </Button.Background>
-      </Button>
-  
-      <Button text="Sign out" background-color="OrangeRed" margin="0,30,0,0" widthRequest="300" @click="signOutClicked" 
-              :textColor="isDarkTheme ? 'white' : 'black'" heightRequest="50" :cornerRadius="25"/>
-  
-      <Button text="Delete account" background-color="Red" margin="0,10,0,0" widthRequest="300" @click="deleteAccountClicked"  
-              :textColor="isDarkTheme ? 'white' : 'black'" heightRequest="50" :cornerRadius="25"/>
-    </VerticalStackLayout>
-  </template>
-  
-  <script>
-  //import LinearGradientBrush from '@/components/LinearGradientBrush.vue'; // Import LinearGradientBrush component
-  
-  export default {
-    data() {
-      return {
-        isDarkTheme: false, // You may need to adjust this based on your Vue.js theme setup
-        username: '',
-        email: '',
-        createdDate: new Date(),
-        loadingViewVisible: false,
-      };
+    <div style="display: flex; flex-direction: column; align-items: center;">
+      <button class="choose-image" @click="chooseImage" style="margin-top: 20px; margin-bottom: 10px;">Choose Image</button>
+      <img :src="image" alt="Selected Image" v-if="image" />
+
+      <label for="username">Username</label>
+      <input type="text" id="username" v-model="username" />
+
+      <label for="email">Email</label>
+      <input type="text" id="email" v-model="email" />
+
+      <p>Created from: {{ createdDateFormatted }}</p>
+
+    <skia-lottie-view
+      v-if="loading"
+      source="Loading.json"
+      repeat-count="-1"
+      height-request="250"
+      width-request="250"
+    ></skia-lottie-view>
+
+    <button @click="save" class="save-button">Save</button>
+    <button @click="signOut" class="sign-out-button">Sign out</button>
+    <button @click="deleteAccount" class="delete-account-button">Delete account</button>
+  </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      image: null,
+      username: "",
+      email: "",
+      createdDate: new Date(),
+      loading: false,
+    };
+  },
+  computed: {
+    createdDateFormatted() {
+      // Format the created date as desired
+      return `${this.createdDate.getDate()}/${this.createdDate.getMonth() + 1}/${this.createdDate.getFullYear()}`;
     },
-    computed: {
-      createdDateFormatted() {
-        // Implement the formatting logic for the created date if needed
-        return ''; // Replace with your formatting logic
-      },
+  },
+  methods: {
+    chooseImage() {
+      // Logic to choose an image from the gallery
+      // You may use a library or a file input for this
     },
-    methods: {
-      saveClicked() {
-        // Handle save click event
-      },
-      signOutClicked() {
-        // Handle sign out click event
-      },
-      deleteAccountClicked() {
-        // Handle delete account click event
-      },
+    save() {
+      // Logic to save data
     },
-  };
-  </script>
-  
-  <style>
-  /* Add any additional styles you need */
-  </style>
-  
+    signOut() {
+      // Logic for signing out
+    },
+    deleteAccount() {
+      // Logic for deleting the account
+    },
+  },
+};
+</script>
+
+<style>
+/* Add your styles here */
+.choose-image {
+  background-color: DarkOrange;
+  color: White;
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.save-button,
+.sign-out-button,
+.delete-account-button {
+  margin-top: 10px;
+  width: 300px;
+  height: 50px;
+  color: White;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+}
+
+.save-button {
+  background: linear-gradient(to right, #FF8C00, #FFD700);
+}
+
+.sign-out-button {
+  background-color: OrangeRed;
+}
+
+.delete-account-button {
+  background-color: Red;
+}
+</style>
+

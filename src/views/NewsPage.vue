@@ -1,11 +1,17 @@
 <template>
-    <div id="app">
-      <search-bar @search="onSearch" />
-      <ul>
-        <item v-for="item in items" :key="item.Text" :item="item" @share="onShareButtonClick" />
-      </ul>
-    </div>
-  </template>
+  <div id="app">
+    <search-bar @search="onSearch" />
+    <ul>
+      <button class="support-button" style="margin-right: 10px;">Health</button>
+      <button class="support-button" style="margin-right: 10px;">Environment</button>
+      <button class="support-button">Food</button>
+
+      <li v-for="item in items" :key="item.Text">
+        <item :item="item" @share="onShareButtonClick" />
+      </li>
+    </ul>
+  </div>
+</template>
   
   <script>
   import Item from '@/components/Item.vue';
@@ -14,7 +20,6 @@
   export default {
     components: {
       Item,
-      SearchBar,
     },
     data() {
       return {
@@ -87,5 +92,36 @@
       border: none;
       cursor: pointer;
   }
+
+  .setting-button {
+    margin: 5px;
+    padding: 10px;
+    background-color: #FFFFFF; 
+    color: #FF4500;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 300px;
+}
+
+.setting-button:hover {
+    background-color: #FFA07A; 
+}
+
+.support-button {
+    margin: 20px;
+    padding: 15px;
+    background: linear-gradient(to right, #FF8C00, #FFD700);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 25px;
+    width: 150px;
+    cursor: pointer;
+}
+
+.support-button:hover {
+    background: linear-gradient(to right, #FF4500, #FF8C00);
+}
+
   </style>
   

@@ -1,39 +1,85 @@
 <template>
-    <li>
-      <div class="item-container">
-        <img :src="item.Image" alt="Item Image" class="item-image">
-        <div class="item-details">
-          <div class="item-text">{{ item.Text }}</div>
-          <div class="item-date">{{ formattedDate }}</div>
-        </div>
-        <img :src="appIconPath" class="share-button" @click="shareButtonClick">
+  <li>
+    <div class="item-container">
+      <img :src="item.Image" alt="Item Image" class="item-image">
+      <div class="item-details">
+        <div class="item-text">{{ item.Text }}</div>
+        <div class="item-date">{{ formattedDate }}</div>
       </div>
-    </li>
-  </template>
-  
-  <script>
-  export default {
-    data() {
+      <img :src="appIconPath" class="share-button" @click="shareButtonClick">
+    </div>
+  </li>
+</template>
+
+<script>
+import axios from 'axios';
+
+export default {
+  data() {
     return {
-      appIconPath: 'ic_share.png' 
+      loading: true,
+      appIconPath: 'ic_share.png',
+      items: [],  
     };
   },
-    props: {
-      item: Object,
+  props: {
+    item: Object,
+  },
+  computed: {
+    formattedDate() {
+      return `${this.item.Start_date.toLocaleDateString()} - ${this.item.Start_date.toLocaleTimeString()}`;
     },
-    computed: {
-      formattedDate() {
-        return `${this.item.Start_date.toLocaleDateString()} - ${this.item.Start_date.toLocaleTimeString()}`;
-      },
+  },
+  methods: {
+    shareButtonClick() {
+      this.$emit('share', this.item.IsNotShared);
     },
-    methods: {
-      shareButtonClick() {
-        this.$emit('share', this.item.IsNotShared);
-      },
-    },
-  };
-  </script>
-  
-  <style>
-  </style>
-  
+  },
+  created() {
+    axios.get('https://orbis-api-web.azurewebsites.net/api/v1/Activities/all')
+      .then(response => {
+        this.items = response.data; 
+        this.loading = false;
+      })
+      .catch(error => {
+        console.error('Erreur lors de la récupération des éléments :', error);
+        this.loading = false;
+      });
+  },
+};
+</script>
+
+<style>
+li {
+  list-style-type: none;
+  margin-bottom: 20px; 
+}
+
+.item-container {
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 20px; 
+border: 2px solid #ddd;
+border-radius: 10px;
+font-size: 18px; 
+}
+
+.item-image {
+max-width: 100px; 
+max-height: 100px;
+margin-right: 20px; 
+}
+
+.item-details {
+  flex-grow: 1;
+  text-align: left;
+}
+
+.share-button {
+  padding: 10px;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+</style>

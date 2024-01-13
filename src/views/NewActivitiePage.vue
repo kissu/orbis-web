@@ -1,127 +1,189 @@
 <template>
-    <div>
-      <ScrollView>
-        <StackLayout :margin="{ left: 20, right: 20 }"
-                     orientation="vertical"
-                     verticalOptions="center">
-          <Picker ref="categories" horizontalOptions="center"
-                  title="Categories" 
-                  :itemsSource="itemCategories" 
-                  itemDisplayBinding="Text" 
-                  v-model="selectedCategoryId" />
-  
-          <Entry margin="5" placeholder="Name" ref="name" placeholderColor="Gray" :textColor="isDarkTheme ? 'white' : 'black'" />
-  
-          <Entry margin="5" ref="userLocation" placeholder="Enter address" @input="onTextChanged"
-                 placeholderColor="Gray" :textColor="isDarkTheme ? 'white' : 'black'" />
-  
-          <ListView margin="5" ref="suggestionsListView" :itemsSource="suggestions" @itemTapped="onItemSelected">
-            <ListView.ItemTemplate>
-              <DataTemplate>
-                <ViewCell>
-                  <Label :text="item" />
-                </ViewCell>
-              </DataTemplate>
-            </ListView.ItemTemplate>
-          </ListView>
-  
-          <Editor margin="5" placeholder="Description" ref="description" heightRequest="100" verticalOptions="start" 
-                  placeholderColor="Gray" :textColor="isDarkTheme ? 'white' : 'black'" />
-  
-          <Button margin="15" text="Choose Image" textColor="White"
-                  verticalOptions="center" horizontalOptions="center"
-                  @click="chooseImageClicked" >
-            <Button.Background>
-              <LinearGradientBrush startPoint="0,0" endPoint="1,0">
-                <GradientStop offset="0" color="#FF8C00" />
-                <GradientStop offset="1" color="#FFD700" />
-              </LinearGradientBrush>
-            </Button.Background>
-          </Button>
-  
-          <Image ref="image" widthRequest="100" heightRequest="100" />
-  
-          <Label text="Start date" :textColor="isDarkTheme ? 'white' : 'black'" />
-          <DatePicker ref="startDatePicker" :date="startDate" margin="5" :textColor="isDarkTheme ? 'white' : 'black'" />
-  
-          <TimePicker ref="startTimePicker" :time="startTime" margin="5" :textColor="isDarkTheme ? 'white' : 'black'" />
-  
-          <Label text="End date" :textColor="isDarkTheme ? 'white' : 'black'" />
-          <DatePicker ref="endDatePicker" :date="endDate" margin="5" :textColor="isDarkTheme ? 'white' : 'black'" />
-  
-          <TimePicker ref="endTimePicker" :time="endTime" margin="5" :textColor="isDarkTheme ? 'white' : 'black'" />
-  
-          <Entry margin="5" placeholder="Maximum participant" ref="maxParticipant" placeholderColor="Gray" :textColor="isDarkTheme ? 'white' : 'black'" />
-  
-          <SKLottieView ref="loadingView"
-                        source="Loading.json"
-                        repeatCount="-1"
-                        heightRequest="250"
-                        widthRequest="250"
-                        horizontalOptions="center" 
-                        verticalOptions="center"
-                        :isVisible="false">
-          </SKLottieView>
-  
-          <Button gridColumnSpan="2" gridRow="7" margin="0,20,0,0" :cornerRadius="25" ref="save" text="Save" 
-                  heightRequest="50" verticalOptions="centerAndExpand" widthRequest="300" 
-                  @click="saveClicked" textColor="White" fontSize="body">
-            <Button.Background>
-              <LinearGradientBrush startPoint="0,0" endPoint="1,0">
-                <GradientStop offset="0" color="#FF8C00" />
-                <GradientStop offset="1" color="#FFD700" />
-              </LinearGradientBrush>
-            </Button.Background>
-          </Button>
-        </StackLayout>
-      </ScrollView>
+  <div id="app">
+    <search-bar @search="onSearch" />
+    <div class="content-container">
+      <picker
+        v-model="selectedCategory"
+        :items="itemCategories"
+        item-text="Text"
+        item-value="Id"
+        label="Categories"
+      ></picker>
+
+      <input
+        v-model="name"
+        class="entry"
+        placeholder="Name"
+        placeholder-color="Gray"
+        :style="{ color: textColor }"
+      />
+      
+      <input
+      v-model="userLocation"
+      class="entry"
+      placeholder="Enter address"
+      @input="onTextChanged"
+      placeholder-color="Gray"
+      :style="{ color: textColor }"
+    />
+
+    <input
+      type="file"
+      ref="fileInput"
+      style="display: none"
+      @change="handleFileChange"
+    />
+
+    <input type="file" ref="imageInput" style="display: none" @change="handleImageChange" />
+    <button class="choose-image-button" @click="openImageInput">Choose Image</button>
+    <img v-if="image" :src="image" class="chosen-image" />
+
+      <textarea
+        v-model="description"
+        class="editor"
+        placeholder="Description"
+        placeholder-color="Gray"
+        :style="{ color: textColor }"
+      ></textarea>
+
+      <button class="choose-image-button" @click="chooseImageClicked">
+        Choose Image
+      </button>
+      <img v-if="image" :src="image" class="chosen-image" />
+
+      <img v-if="selectedImage" :src="selectedImage" alt="Selected Image" width="100" height="100" />
+      <label class="date-label">Start date</label>
+      <date-picker v-model="startDate" :style="{ color: textColor }"></date-picker>
+      <time-picker v-model="startTime" :style="{ color: textColor }"></time-picker>
+
+      <label class="date-label">End date</label>
+      <date-picker v-model="endDate" :style="{ color: textColor }"></date-picker>
+      <time-picker v-model="endTime" :style="{ color: textColor }"></time-picker>
+
+      <input
+        v-model="maxParticipants"
+        class="entry"
+        placeholder="Maximum participant"
+        placeholder-color="Gray"
+        :style="{ color: textColor }"
+      />
+      
+      <button class="save-button" @click="saveClicked">Save</button>
     </div>
-  </template>
+  </div>
   
-  <script>
-  //import LinearGradientBrush from '@/components/LinearGradientBrush.vue'; // Import LinearGradientBrush component
-  
-  export default {
-    data() {
-      return {
-        isDarkTheme: false, // You may need to adjust this based on your Vue.js theme setup
-        itemCategories: ["Category1", "Category2", "Category3"], // Replace with your data
-        suggestions: ["Location1", "Location2", "Location3"], // Replace with your data
-        selectedCategory: null,
-        name: '',
-        userLocation: '',
-        description: '',
-        startDate: new Date(),
-        startTime: new Date(),
-        endDate: new Date(),
-        endTime: new Date(),
-        maxParticipant: '',
-        loadingViewVisible: false,
-      };
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      selectedCategory: null,
+      itemCategories: [
+        { Id: 1, Text: 'Category1' },
+        { Id: 2, Text: 'Category2' },
+        { Id: 3, Text: 'Category3' },
+      ],
+      name: '',
+      userLocation: '',
+      suggestions: [],
+      description: '',
+      image: '',
+      startDate: new Date(),
+      startTime: '',
+      endDate: new Date(),
+      endTime: '',
+      maxParticipants: '',
+      loadingViewVisible: false,
+    };
+  },
+  methods: {
+    onSearch(query) {
+      // Handle search logic
     },
-    computed: {
-      selectedCategoryText() {
-        return this.selectedCategory ? this.selectedCategory.Text : '';
-      },
+    onTextChanged() {
+      // Handle text changed logic
     },
-    methods: {
-      onTextChanged() {
-        // Handle text changed event
-      },
-      onItemSelected(item) {
-        // Handle item selected event
-      },
-      chooseImageClicked() {
-        // Handle choose image click event
-      },
-      saveClicked() {
-        // Handle save click event
-      },
+    onItemSelected(suggestion) {
+      // Handle item selected logic
     },
-  };
-  </script>
-  
-  <style>
-  /* Add any additional styles you need */
-  </style>
-  
+    chooseImageClicked() {
+      // Handle choose image logic
+    },
+    saveClicked() {
+      // Handle save button clicked logic
+    },
+    openImageInput() {
+    this.$refs.imageInput.click();
+  },
+
+  handleImageChange(event) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedImage = URL.createObjectURL(file);
+    }
+  },
+  },
+};
+</script>
+
+<style scoped>
+#app {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.content-container {
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.entry,
+.editor,
+.choose-image-button,
+.date-label,
+.save-button {
+  margin: 5px;
+  padding: 10px;
+  border-radius: 5px;
+  width: 300px;
+}
+
+.save-button {
+    margin: 20px;
+    padding: 15px;
+    background: linear-gradient(to right, #FF8C00, #FFD700);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 25px;
+    width: 300px;
+    cursor: pointer;
+}
+
+.save-button:hover {
+    background: linear-gradient(to right, #FF4500, #FF8C00);
+}
+
+.editor {
+  height: 100px;
+}
+
+.chosen-image {
+  width: 100px;
+  height: 100px;
+  margin: 5px;
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul li {
+  cursor: pointer;
+  margin: 5px;
+}
+
+</style>

@@ -1,8 +1,17 @@
 <template>
   <div id="app">
-    <search-bar @search="onSearch" />
+    <search-bar @search="onSearch" class="flex-item" />
+    <img :src="appIconPath" alt="Add Icon" class="add-icon" @click="addClicked" />
     <ul>
-      <item v-for="item in items" :key="item.Text" :item="item" @share="onShareButtonClick" />
+      <label for="categoryPicker">Select Category</label>
+      <select id="categoryPicker" v-model="selectedCategory" @change="onCategoryChange" style="margin-right: 10px;">
+        <option v-for="category in itemCategories" :key="category">{{ category }}</option>
+      </select>
+      <label for="timePicker">Select Time</label>
+      <select id="timePicker" v-model="selectedTime" @change="onTimeChange">
+        <option v-for="time in itemTimes" :key="time">{{ time }}</option>
+      </select>
+      <item v-for="item in filteredItems" :key="item.Text" :item="item" @share="onShareButtonClick" />
     </ul>
   </div>
 </template>
@@ -20,16 +29,30 @@ export default {
     return {
       suggestions: ["Location1", "Location2", "Location3"],
       itemCategories: ["Category1", "Category2", "Category3"],
+      itemTimes: ["Time1", "Time2", "Time3"], // Utilisez les bonnes valeurs pour le temps
+      selectedCategory: "All",
+      selectedTime: "All", // Ajoutez cette propriété
+      appIconPath: 'ic_add.png',
       items: [
-        { Image: 'image1.png', Text: 'Item 1', Start_date: new Date(), IsNotShared: true },
-        { Image: 'image2.png', Text: 'Item 2', Start_date: new Date(), IsNotShared: true },
-        { Image: 'image1.png', Text: 'Item 3', Start_date: new Date(), IsNotShared: true },
-        { Image: 'image2.png', Text: 'Item 4', Start_date: new Date(), IsNotShared: true },
-        { Image: 'image1.png', Text: 'Item 5', Start_date: new Date(), IsNotShared: true },
+        { Image: 'image1.png', Text: 'Item 1', Start_date: new Date(), IsNotShared: true, Category: 'Category1' },
+        { Image: 'image2.png', Text: 'Item 2', Start_date: new Date(), IsNotShared: true, Category: 'Category2' },
+        { Image: 'image1.png', Text: 'Item 3', Start_date: new Date(), IsNotShared: true, Category: 'Category3' },
+        { Image: 'image2.png', Text: 'Item 4', Start_date: new Date(), IsNotShared: true, Category: 'Category4' },
+        { Image: 'image1.png', Text: 'Item 5', Start_date: new Date(), IsNotShared: true, Category: 'Category5' },
       ],
     };
   },
+  computed: {
+    filteredItems() {
+      return this.items
+        .filter(item => this.selectedCategory === "All" || item.Category === this.selectedCategory)
+        .filter(item => this.selectedTime === "All" || item.Time === this.selectedTime);
+    },
+  },
   methods: {
+    addClicked() {
+      this.$router.push('/newactivitie');
+    },
     onShareButtonClick(isNotShared) {
       if (isNotShared) {
         alert('Item shared!');
@@ -38,17 +61,37 @@ export default {
       }
     },
     onSearch(query) {
-
+    },
+    onCategoryChange() {
     },
   },
 };
 </script>
+
 
 <style>
 body {
     display: flex;
     justify-content: center;
     margin: 0;
+}
+
+.add-icon {
+    width: 35px;
+    height: 35px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-item {
+  flex-grow: 1;
+  margin-right: 10px;
 }
 
 #app {

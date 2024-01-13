@@ -1,90 +1,117 @@
 <template>
-    <div>
-      <ScrollView :style="{ backgroundColor: isDarkTheme ? 'black' : 'white' }">
-        <StackLayout orientation="vertical">
-          <Grid>
-            <Grid.RowDefinitions>
-              <RowDefinition height="auto"/>
-              <RowDefinition height="*"/>
-              <RowDefinition height="*"/>
-              <RowDefinition height="*"/>
-            </Grid.RowDefinitions>
-            <BoxView ref="box" />
-            <StackLayout gridRow="4" heightRequest="600" verticalOptions="fillAndExpand" horizontalOptions="fillAndExpand" margin="0">
-              <SKLottieView v-if="!isEmpty" ref="emptyView"
-                            :source="'Empty.json'"
-                            repeatCount="-1"
-                            heightRequest="250"
-                            widthRequest="250"
-                            horizontalOptions="center" 
-                            verticalOptions="center"
-                            :isVisible="false">
-              </SKLottieView>
-  
-              <Label v-if="isEmpty" text="It's empty here" horizontalOptions="center" verticalOptions="center" fontSize="title" :textColor="isDarkTheme ? 'white' : 'black'" :isVisible="false" ref="isEmpty"/>
-  
-              <ActivityIndicator v-if="isBusy" :isRunning="isBusy" :isVisible="isBusy" color="#404040" verticalOptions="center" horizontalOptions="center" />
-              <CollectionView v-if="!isBusy" ref="joinedActivitiesCollectionView" :itemsSource="joinedActivities" selectionMode="none">
-                <CollectionView.ItemTemplate>
-                  <DataTemplate>
-                    <StackLayout padding="10">
-  
-                      <StackLayout.gestureRecognizers>
-                        <TapGestureRecognizer @onTap="itemTapped" />
-                      </StackLayout.gestureRecognizers>
-  
-                      <StackLayout orientation="horizontal">
-                        <Image :source="item.Image" heightRequest="50" widthRequest="70"/>
-                        <Label :text="item.Name" lineBreakMode="wordWrap" :style="listItemTextStyle" fontSize="16" :textColor="isDarkTheme ? 'white' : 'black'" horizontalOptions="startAndExpand"/>
-                      </StackLayout>
-  
-                    </StackLayout>
-                  </DataTemplate>
-                </CollectionView.ItemTemplate>
-              </CollectionView>
-            </StackLayout>
-          </Grid>
-        </StackLayout>
-      </ScrollView>
-    </div>
-  </template>
-  
-  <script>
-  //import LinearGradientBrush from '@/components/LinearGradientBrush.vue'; // Import LinearGradientBrush component
-  
-  export default {
-    data() {
-      return {
-        isDarkTheme: false, // You may need to adjust this based on your Vue.js theme setup
-        isEmpty: false, // Set to true/false based on your logic
-        isBusy: false, // Set to true/false based on your logic
-        joinedActivities: [
-          // Populate with your data
-          { Image: 'image1.png', Name: 'Activity 1' },
-          { Image: 'image2.png', Name: 'Activity 2' },
-          // ...
-        ],
-      };
+  <div id="app">
+    <ul>
+      <item v-for="item in filteredItems" :key="item.Text" :item="item" @share="onShareButtonClick" />
+    </ul>
+  </div>
+</template>
+
+<script>
+import Item from '@/components/Item.vue';
+
+export default {
+  components: {
+    Item,
+  },
+  data() {
+    return {
+      selectedCategory: "All", 
+      appIconPath: 'ic_add.png',
+      items: [
+        { Image: 'image1.png', Text: 'Item 1', Start_date: new Date(), IsNotShared: true, Category: 'Category1' },
+        { Image: 'image2.png', Text: 'Item 2', Start_date: new Date(), IsNotShared: true, Category: 'Category2' },
+        { Image: 'image1.png', Text: 'Item 3', Start_date: new Date(), IsNotShared: true, Category: 'Category3' },
+        { Image: 'image2.png', Text: 'Item 4', Start_date: new Date(), IsNotShared: true, Category: 'Category4' },
+        { Image: 'image1.png', Text: 'Item 5', Start_date: new Date(), IsNotShared: true, Category: 'Category5' },
+      ],
+    };
+  },
+  computed: {
+    filteredItems() {
+      return this.selectedCategory === "All"
+        ? this.items
+        : this.items.filter(item => item.Category === this.selectedCategory);
     },
-    computed: {
-      listItemTextStyle() {
-        return {
-          fontSize: '12px',
-          color: this.isDarkTheme ? 'white' : 'black',
-          // Add any other styles you need for listItemText
-        };
-      },
+  },
+  methods: {
+    addClicked() {
+      this.$router.push('/newactivitie');
     },
-    methods: {
-      itemTapped(item) {
-        // Handle item tap logic
-      },
+    onShareButtonClick(isNotShared) {
+      if (isNotShared) {
+        alert('Item shared!');
+      } else {
+        alert('Item is already shared.');
+      }
     },
-  };
-  </script>
-  
-  <style>
-  /* Add any additional styles you need */
-  </style>
-  
-  
+    onSearch(query) {
+    },
+    onCategoryChange() {
+    },
+  },
+};
+</script>
+
+
+<style>
+body {
+    display: flex;
+    justify-content: center;
+    margin: 0;
+}
+
+.add-icon {
+    width: 35px;
+    height: 35px;
+    margin-bottom: 10px;
+    cursor: pointer;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.flex-item {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+#app {
+    text-align: center;
+    margin-top: 50px;
+}
+
+input[type="text"] {
+    border-radius: 10px; 
+    padding: 10px;
+}
+
+.item-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    border: 1px solid #ddd;
+    margin: 10px;
+}
+
+.item-image {
+    max-width: 50px;
+    max-height: 50px;
+    margin-right: 10px;
+}
+
+.item-details {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.share-button {
+    padding: 5px 10px;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+</style>

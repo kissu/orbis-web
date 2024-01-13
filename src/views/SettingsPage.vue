@@ -20,7 +20,7 @@
   },
     methods: {
       profileClicked() {
-        this.$router.push('/logout');
+        this.$router.push('/profile');
       },
       privacyClicked() {
         this.$router.push('/privacy');

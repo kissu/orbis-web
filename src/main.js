@@ -17,6 +17,11 @@ import PublishedPage from './views/PublishedPage.vue'
 import UpdateActivitiePage from './views/UpdateActivitiePage.vue'
 import AboutPage from './views/AboutPage.vue'
 
+import axios from 'axios';
+
+const app = createApp(App);
+
+app.config.globalProperties.$axios = axios;
 
 const router = createRouter({
   history: createWebHistory(),
