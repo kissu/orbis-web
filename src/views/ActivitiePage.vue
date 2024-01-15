@@ -29,9 +29,9 @@ export default {
     return {
       suggestions: ["Location1", "Location2", "Location3"],
       itemCategories: ["Category1", "Category2", "Category3"],
-      itemTimes: ["Time1", "Time2", "Time3"], // Utilisez les bonnes valeurs pour le temps
+      itemTimes: ["Time1", "Time2", "Time3"], 
       selectedCategory: "All",
-      selectedTime: "All", // Ajoutez cette propriété
+      selectedTime: "All", 
       appIconPath: 'ic_add.png',
       items: [
         { Image: 'image1.png', Text: 'Item 1', Start_date: new Date(), IsNotShared: true, Category: 'Category1' },

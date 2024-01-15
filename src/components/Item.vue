@@ -20,6 +20,7 @@ export default {
       loading: true,
       appIconPath: 'ic_share.png',
       items: [],  
+      test: [],
     };
   },
   props: {
@@ -36,13 +37,21 @@ export default {
     },
   },
   created() {
-    axios.get('https://orbis-api-web.azurewebsites.net/api/v1/Activities/all')
+    fetch('/api/v1/Activities/all')
       .then(response => {
-        this.items = response.data; 
+        if (!response.ok) {
+          throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+        console.log(response);
+        return response.json();
+      })
+      .then(data => {
+        console.log(data);
+        this.test = data; 
         this.loading = false;
       })
       .catch(error => {
-        console.error('Erreur lors de la récupération des éléments :', error);
+        console.error('Error retrieving items:', error);
         this.loading = false;
       });
   },
