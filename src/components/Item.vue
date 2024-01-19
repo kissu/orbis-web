@@ -1,26 +1,21 @@
 <template>
-  <li>
-    <div class="item-container">
-      <img :src="item.Image" alt="Item Image" class="item-image">
-      <div class="item-details">
-        <div class="item-text">{{ item.Text }}</div>
-        <div class="item-date">{{ formattedDate }}</div>
-      </div>
-      <img :src="appIconPath" class="share-button" @click="shareButtonClick">
+  <div class="item-container">
+    <img :src="item.Image" alt="Item Image" class="item-image">
+    <div class="item-details">
+      <div class="item-text">{{ item.Text }}</div>
+      <div class="item-date">{{ formattedDate }}</div>
     </div>
-  </li>
+    <img :src="appIconPath" class="share-button" @click="shareButtonClick">
+  </div>
 </template>
 
 <script>
-import axios from 'axios';
 
 export default {
   data() {
     return {
-      loading: true,
       appIconPath: 'ic_share.png',
       items: [],  
-      test: [],
     };
   },
   props: {
@@ -36,26 +31,7 @@ export default {
       this.$emit('share', this.item.IsNotShared);
     },
   },
-  created() {
-    fetch('/api/v1/Activities/all')
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Network response was not ok, status: ${response.status}`);
-        }
-        console.log(response);
-        return response.json();
-      })
-      .then(data => {
-        console.log(data);
-        this.test = data; 
-        this.loading = false;
-      })
-      .catch(error => {
-        console.error('Error retrieving items:', error);
-        this.loading = false;
-      });
-  },
-};
+}
 </script>
 
 <style>

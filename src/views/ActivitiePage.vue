@@ -11,10 +11,20 @@
       <select id="timePicker" v-model="selectedTime" @change="onTimeChange">
         <option v-for="time in itemTimes" :key="time">{{ time }}</option>
       </select>
-      <item v-for="item in filteredItems" :key="item.Text" :item="item" @share="onShareButtonClick" />
+      <item v-for="item in items" :key="item.Text" :item="item" @share="onShareButtonClick" />
     </ul>
+
+    <div v-if="loading">Loading...</div>
+    <div v-else>
+      <div v-if="items.length === 0">No items available.</div>
+      <div v-else>
+        <div>Items:</div>
+        <pre>{{ JSON.stringify(items, null, 2) }}</pre>
+      </div>
+    </div>
   </div>
 </template>
+
 
 <script>
 import Item from '@/components/Item.vue';
@@ -33,21 +43,9 @@ export default {
       selectedCategory: "All",
       selectedTime: "All", 
       appIconPath: 'ic_add.png',
-      items: [
-        { Image: 'image1.png', Text: 'Item 1', Start_date: new Date(), IsNotShared: true, Category: 'Category1' },
-        { Image: 'image2.png', Text: 'Item 2', Start_date: new Date(), IsNotShared: true, Category: 'Category2' },
-        { Image: 'image1.png', Text: 'Item 3', Start_date: new Date(), IsNotShared: true, Category: 'Category3' },
-        { Image: 'image2.png', Text: 'Item 4', Start_date: new Date(), IsNotShared: true, Category: 'Category4' },
-        { Image: 'image1.png', Text: 'Item 5', Start_date: new Date(), IsNotShared: true, Category: 'Category5' },
-      ],
+      items: [],
+      loading: true,
     };
-  },
-  computed: {
-    filteredItems() {
-      return this.items
-        .filter(item => this.selectedCategory === "All" || item.Category === this.selectedCategory)
-        .filter(item => this.selectedTime === "All" || item.Time === this.selectedTime);
-    },
   },
   methods: {
     addClicked() {
@@ -61,9 +59,31 @@ export default {
       }
     },
     onSearch(query) {
+      
     },
     onCategoryChange() {
+      
     },
+    onTimeChange() {
+      
+    },
+  },
+  created() {
+    fetch('/api/v1/Activities/all')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Network response was not ok, status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        this.items = data; 
+        this.loading = false;
+      })
+      .catch(error => {
+        console.error('Error retrieving items:', error);
+        this.loading = false;
+      });
   },
 };
 </script>
