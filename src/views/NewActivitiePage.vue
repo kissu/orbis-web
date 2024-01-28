@@ -27,6 +27,12 @@
       :style="{ color: textColor }"
     />
 
+    <ul>
+      <li v-for="suggestion in suggestions" :key="suggestion">
+        {{ suggestion }}
+      </li>
+    </ul>
+
     <input
       type="file"
       ref="fileInput"
@@ -99,30 +105,52 @@ export default {
   },
   methods: {
     onSearch(query) {
-      // Handle search logic
+      
     },
     onTextChanged() {
-      // Handle text changed logic
+      
     },
     onItemSelected(suggestion) {
-      // Handle item selected logic
+      
     },
     chooseImageClicked() {
-      // Handle choose image logic
+      
     },
     saveClicked() {
-      // Handle save button clicked logic
+      
     },
     openImageInput() {
     this.$refs.imageInput.click();
   },
-
   handleImageChange(event) {
     const file = event.target.files[0];
     if (file) {
       this.selectedImage = URL.createObjectURL(file);
     }
   },
+  async getlocationSuggestions() {
+      try {
+        const apiKey = "AIzaSyDbxbuUBY_NIiWroQZKMCmmtqYrPi2BYBs";
+        const language = "en";
+
+        const response = await fetch(
+          `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${this.userLocation}&key=${apiKey}&language=${language}`
+        );
+
+        if (response.ok) {
+          const data = await response.json();
+          this.suggestions = data.predictions.map((prediction) => prediction.description);
+        } else {
+          console.error("Error fetching location suggestions");
+        }
+      } catch (error) {
+        console.error("Error fetching location suggestions", error);
+      }
+    },
+
+    onTextChanged() {
+      this.getlocationSuggestions();
+    },
   },
 };
 </script>
@@ -159,6 +187,17 @@ export default {
     border: none;
     border-radius: 25px;
     width: 300px;
+    cursor: pointer;
+}
+
+.choose-image-button{
+    margin: 20px;
+    padding: 15px;
+    background: linear-gradient(to right, #FF8C00, #FFD700);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 25px;
+    width: 150px;
     cursor: pointer;
 }
 

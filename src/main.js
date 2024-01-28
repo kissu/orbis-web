@@ -16,6 +16,7 @@ import ProfilePage from './views/ProfilePage.vue'
 import PublishedPage from './views/PublishedPage.vue'
 import UpdateActivitiePage from './views/UpdateActivitiePage.vue'
 import AboutPage from './views/AboutPage.vue'
+import SignInPage from './views/SignInPage.vue'
 
 import axios from 'axios';
 
@@ -41,6 +42,7 @@ const router = createRouter({
     { path: '/publish', component: PublishedPage }, 
     { path: '/update', component: UpdateActivitiePage }, 
     { path: '/about', component: AboutPage }, 
+    { path: '/signin', component: SignInPage }, 
   ],
 })
 

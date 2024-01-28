@@ -1,7 +1,15 @@
 <template>
     <div style="display: flex; flex-direction: column; align-items: center;">
-      <button class="choose-image" @click="chooseImage" style="margin-top: 20px; margin-bottom: 10px;">Choose Image</button>
-      <img :src="image" alt="Selected Image" v-if="image" />
+      <input type="file" ref="imageInput" style="display: none" @change="handleImageChange" />
+    <button class="choose-image-button" @click="openImageInput">Choose Image</button>
+    
+    <img v-if="image" :src="image" class="chosen-image" />
+      <button class="choose-image-button" @click="chooseImageClicked">
+        Choose Image
+      </button>
+      
+      <img v-if="image" :src="image" class="chosen-image" />
+      <img v-if="selectedImage" :src="selectedImage" alt="Selected Image" width="100" height="100" />
 
       <label for="username">Username</label>
       <input type="text" id="username" v-model="username" />
@@ -38,37 +46,56 @@ export default {
   },
   computed: {
     createdDateFormatted() {
-      // Format the created date as desired
       return `${this.createdDate.getDate()}/${this.createdDate.getMonth() + 1}/${this.createdDate.getFullYear()}`;
     },
   },
   methods: {
     chooseImage() {
-      // Logic to choose an image from the gallery
-      // You may use a library or a file input for this
+
     },
     save() {
-      // Logic to save data
+      if (!this.email || !this.username) {
+        alert("Something is wrong");
+        return;
+      }
+
+      if (!this.email.includes('@') || !this.email.includes('.')) {
+        alert("Invalid email");
+        return;
+      }
+
+      alert("Registration successful");
     },
     signOut() {
-      // Logic for signing out
+      
     },
     deleteAccount() {
-      // Logic for deleting the account
+      
     },
+    openImageInput() {
+    this.$refs.imageInput.click();
+    },
+    handleImageChange(event) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedImage = URL.createObjectURL(file);
+    }
+  },
   },
 };
 </script>
 
 <style>
-/* Add your styles here */
-.choose-image {
-  background-color: DarkOrange;
-  color: White;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+
+.choose-image-button{
+    margin: 20px;
+    padding: 15px;
+    background: linear-gradient(to right, #FF8C00, #FFD700);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 25px;
+    width: 150px;
+    cursor: pointer;
 }
 
 .save-button,

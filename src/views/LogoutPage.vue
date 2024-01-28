@@ -15,6 +15,14 @@
           <span>Sign in with Microsoft</span>
         </div>
       </div>
+
+      <label for="username">Username</label>
+      <input type="text" id="username" v-model="username" />
+
+      <label for="email">Email</label>
+      <input type="text" id="email" v-model="email" />
+
+    <button @click="Login" class="login-button">Save</button>
     </div>
   </template>
   
@@ -34,6 +42,9 @@
       signInWithMicrosoft() {
         console.log("Sign in with Microsoft clicked");
       },
+      Login() {
+      this.$router.push('/signin');
+    },
     },
   };
   </script>

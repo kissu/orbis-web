@@ -11,18 +11,15 @@
       <select id="timePicker" v-model="selectedTime" @change="onTimeChange">
         <option v-for="time in itemTimes" :key="time">{{ time }}</option>
       </select>
-      <item v-for="item in items" :key="item.Text" :item="item" @share="onShareButtonClick" />
+      <item v-for="item in items" :key="item.id" :item="item" @share="onShareButtonClick" />
     </ul>
 
     <div v-if="loading">Loading...</div>
     <div v-else>
-      <div v-if="items.length === 0">No items available.</div>
-      <div v-else>
         <div>Items:</div>
         <pre>{{ JSON.stringify(items, null, 2) }}</pre>
       </div>
     </div>
-  </div>
 </template>
 
 
@@ -43,13 +40,15 @@ export default {
       selectedCategory: "All",
       selectedTime: "All", 
       appIconPath: 'ic_add.png',
-      items: [],
+      items: [ { Image: 'image1.png', Text: 'Item 1', Start_date: new Date(), IsNotShared: true, Category: 'Category1' },
+        { Image: 'image2.png', Text: 'Item 2', Start_date: new Date(), IsNotShared: true, Category: 'Category2' },
+        { Image: 'image1.png', Text: 'Item 3', Start_date: new Date(), IsNotShared: true, Category: 'Category3' },],
       loading: true,
     };
   },
   methods: {
     addClicked() {
-      this.$router.push('/newactivitie');
+      this.$router.push('/newactivitie'); 
     },
     onShareButtonClick(isNotShared) {
       if (isNotShared) {

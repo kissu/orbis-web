@@ -79,14 +79,13 @@
   </template>
   
   <script>
-  //import LinearGradientBrush from '@/components/LinearGradientBrush.vue'; // Import LinearGradientBrush component
   
   export default {
     data() {
       return {
-        isDarkTheme: false, // You may need to adjust this based on your Vue.js theme setup
-        itemCategories: ["Category1", "Category2", "Category3"], // Replace with your data
-        suggestions: ["Location1", "Location2", "Location3"], // Replace with your data
+        isDarkTheme: false,
+        itemCategories: ["Category1", "Category2", "Category3"], 
+        suggestions: ["Location1", "Location2", "Location3"], 
         selectedCategory: null,
         name: '',
         userLocation: '',
