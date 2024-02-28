@@ -1,14 +1,26 @@
 <template>
   <div id="app">
     <div class="app-shell">
-      <router-link to="/activities" class="tab-bar">ActivitiePage</router-link>
-      <router-link to="/news" class="tab-bar">NewsPage</router-link>
-      <router-link to="/settings" class="tab-bar">SettingsPage</router-link>
-
+      <router-link to="/categories" class="tab-bar">
+        <img src="/ic_emoji_people.png" alt="Categories" />
+      </router-link>
+      <router-link to="/categories" class="tab-bar">
+        <img src="/messages.png" alt="Categories" />
+      </router-link>
+      <router-link to="/categories" class="tab-bar">
+        <img src="/ic_edit.png" alt="Categories" />
+      </router-link>
+      <router-link to="/categories" class="tab-bar">
+        <img src="/analysis.png" alt="Categories" />
+      </router-link>
+      <router-link to="/settings" class="tab-bar">
+        <img src="/gear_apple.png" alt="Settings" />
+      </router-link>
       <router-view></router-view>
     </div>
   </div>
 </template>
+
 
 <style>
 body {
@@ -27,7 +39,6 @@ body {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  background-color: #007BFF;
   color: white;
   height: 50px;
   text-decoration: none;
