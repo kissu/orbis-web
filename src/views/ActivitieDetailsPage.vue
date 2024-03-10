@@ -1,7 +1,6 @@
 <template>
-  <div>
-    <div v-if="loading">Chargement en cours...</div>
-    <div v-if="!loading">
+  <div class="main-container"> 
+  <div class="activity-name">
       <h2>{{ activity.name }}</h2>
       <p>{{ activity.description }}</p>
     </div>
@@ -14,7 +13,6 @@ export default {
   data() {
     return {
       activity: {},
-      loading: true,
     };
   },
   mounted() {
@@ -41,3 +39,21 @@ export default {
   },
 };
 </script>
+
+<style scoped> 
+
+.main-container {
+  background-color: #fdb213;
+  height: 100%; 
+  width: 197vh;
+  overflow: hidden; 
+}
+
+.activity-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+}
+
+</style>
+

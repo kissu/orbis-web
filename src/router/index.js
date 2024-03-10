@@ -16,7 +16,7 @@ import PublishedPage from '../views/PublishedPage.vue'
 import UpdateActivitiePage from '../views/UpdateActivitiePage.vue'
 import AboutPage from '../views/AboutPage.vue'
 import SignInPage from '../views/SignInPage.vue'
-import BecomeJournalistPage from '@/views/BecomeJournalistPage.vue';
+import ApplyPage from '@/views/ApplyPage.vue';
 import BlindPage from '@/views/BlindPage.vue';
 import CategoriesPage from '@/views/CategoriesPage.vue';
 import ContactPage from '@/views/ContactPage.vue';
@@ -31,7 +31,11 @@ import UpdateNewsPage from '@/views/UpdateNewsPage.vue';
 import ActionsPage from '@/views/ActionsPage.vue';
 import DonatePage from '@/views/DonatePage.vue';
 import CleanPage from '@/views/CleanPage.vue';
+import NewCleanPage from '@/views/NewCleanPage.vue';
 import Lottie from 'vue-lottie';
+import MessagesPage from '@/views/MessagesPage.vue';
+import GroupMessagePage from '@/views/GroupMessagePage.vue';
+import AnalysisPage from '@/views/AnalysisPage.vue';
 
 app.component('lottie', Lottie);
 
@@ -53,7 +57,7 @@ const routes = [
   { path: '/about', component: AboutPage }, 
   { path: '/signin', component: SignInPage }, 
   { path: '/actions', component: ActionsPage }, 
-  { path: '/becomejournalist', component: BecomeJournalistPage }, 
+  { path: '/apply', component: ApplyPage }, 
   { path: '/blind', component: BlindPage }, 
   { path: '/categories', component: CategoriesPage }, 
   { path: '/contact', component: ContactPage }, 
@@ -61,6 +65,7 @@ const routes = [
   { path: '/cleandetails/:id', name: 'cleandetails', component: CleanDetailsPage },
   { path: '/newdonation', component: NewDonationPage }, 
   { path: '/newnews', component: NewNewsPage }, 
+  { path: '/newclean', component: NewCleanPage }, 
   { path: '/newsliked', component: NewsLikedPage }, 
   { path: '/newspublished', component: NewsPublishedPage }, 
   { path: '/sos', component: SOSPage }, 
@@ -68,6 +73,10 @@ const routes = [
   { path: '/updatenews', component: UpdateNewsPage }, 
   { path: '/donate', component: DonatePage }, 
   { path: '/clean', component: CleanPage }, 
+  { path: '/messages', component: MessagesPage }, 
+  { path: '/groupmessage/:id', name: 'groupmessage', component: GroupMessagePage }, 
+  { path: '/analysis', component: AnalysisPage }, 
+  
 ];
 
 const router = createRouter({

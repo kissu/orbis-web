@@ -1,165 +1,193 @@
 <template>
-    <div style="display: flex; flex-direction: column; align-items: center;">
+    <div>
+    <label for="image" class="image-upload">
+      <img src="/src/images/camera.png" alt="Upload Image" class="upload-icon" />
+  </label>
+  <input type="file" id="image" @change="handleImageChange" accept="image/*" class="input" style="display: none;" />
+      <input v-model="email" placeholder="Email" class="input-field" required/>
+      <input v-model="name" placeholder="Name" class="input-field" required/>
+      <input v-model="password" placeholder="Password" type="password" class="input-field" required/>
+      <input v-model="password" placeholder="Confirm password" type="password" class="input-field" required/>
+      <button @click="login">Login</button>
 
-    <input type="file" ref="imageInput" style="display: none" @change="handleImageChange" />
-    <button class="choose-image-button" @click="openImageInput">Choose Image</button>
-    
-    <img v-if="image" :src="image" class="chosen-image" />
-      <button class="choose-image-button" @click="chooseImageClicked">
-        Choose Image
-      </button>
-      <img v-if="image" :src="image" class="chosen-image" />
-
-      <img v-if="selectedImage" :src="selectedImage" alt="Selected Image" width="100" height="100" />
-
-      <label for="username">Username</label>
-      <input type="text" id="username" v-model="username" />
-
-      <label for="email">Email</label>
-      <input type="text" id="email" v-model="email" />
-
-    <label for="password">Password</label>
-    <div style="display: flex; align-items: center;">
-    <input type="text" id="password" v-model="password" :type="showPassword ? 'text' : 'password'" />
-    <input type="checkbox" @change="togglePasswordVisibility" />
-    </div>
-
-    <label for="confirmPassword">Confirm password</label>
-    <div style="display: flex; align-items: center;">
-    <input type="text" id="confirmPassword" v-model="confirmPassword" :type="showConfirmPassword ? 'text' : 'confirmPassword'" />
-    <input type="checkbox" v-model="showConfirmPassword" />
-    </div>
-
-    <button @click="register" class="register-button">Register</button>
-    
   </div>
-</template>
+  
+  </template>
+  
+  <script>
+  
+  export default {
+    data() {
+      return {
+        email: '',
+        password: '',
+      };
+    },
+    methods: {
+      async login() {
+        try {
+          const apiUrl = '/api/v1/users/RecoverWithEmailPassword';
+  
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: new URLSearchParams({
+          'email': this.email,
+          'password': this.password,
+        }),
+      });
+  
+      if (response.ok) {
+        const user = await response.json();
+  
+        alert("yes");
+  
+        this.$store.dispatch('setUser', user);
+        this.$router.push('/profile'); 
+        
+        return { success: true };
+      } else {
+        alert("No");
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+  
+        return { success: false, error: errorData };
+      }
+    } catch (error) {
+      console.error('Fetch Error:', error);
+      return { success: false, error: error.message };
+    }
+      },
+    },
+  };
+  </script>
 
-<script>
-export default {
-  data() {
-    return {
-      image: null,
-      username: "",
-      email: "",
-      createdDate: new Date(),
-      loading: false,
-      password: '',
-      showPassword: false,
-      confirmPassword: '',
-      showConfirmPassword: false,
-    };
-  },
-  computed: {
-    createdDateFormatted() {
-      return `${this.createdDate.getDate()}/${this.createdDate.getMonth() + 1}/${this.createdDate.getFullYear()}`;
-    },
-  },
-  methods: {
-    chooseImage() {
-        
-    },
-    register() {
-      if (!this.email || !this.username || !this.password || !this.confirmPassword) {
-        alert("Something is wrong");
-        return;
-      }
+<style scoped>
 
-      if (!this.email.includes('@') || !this.email.includes('.')) {
-        alert("Invalid email");
-        return;
-      }
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 
-      if (this.password.length < 5) {
-        alert("Your password is too short");
-        return;
-      }
+  body {
+    background-color: #ffd700;
+  }
 
-      if (this.password !== this.confirmPassword) {
-        alert("Password and confirmation password do not match");
-        return;
-      }
+  .input-field {
+    width: 300px;
+    height: 35px;
+    margin: 5px 0; 
+    padding: 5px;
+    border: 1px solid #404040;
+    border-radius: 5px;
+  }
 
-      const accountExists = this.checkIfAccountExists();
-      if (accountExists) {
-        alert("You already have an account");
-        return;
-      }
+  div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+  }
 
-      alert("Registration successful");
-    },
-    async checkIfAccountExists() {
-      try {
-        const apiUrl = `/api/v1/users/GetUserByEmail/${this.email}`;
-        const response = fetch(apiUrl);
+  input {
+    width: 300px;
+    height: 35px;
+    margin: 10px;
+    padding: 5px;
+    border: 1px solid #404040;
+    border-radius: 5px;
+  }
 
-        if (response.ok) {
-          return true;
-        } else {
-          return false;
-        }
-      } catch (error) {
-        console.error(`Account Existence Check Error: ${error.message}`);
-        return false;
-      }
-    },
-    signOut() {
-        
-    },
-    deleteAccount() {
-        
-    },
-    openImageInput() {
-    this.$refs.imageInput.click();
-    },
-    togglePasswordVisibility() {
-      this.showPassword = !this.showPassword;
-    },
-    toggleConfirmPasswordVisibility() {
-      this.showConfirmPassword = !this.showConfirmPassword;
-    },
-    handleImageChange(event) {
-    const file = event.target.files[0];
-    if (file) {
-      this.selectedImage = URL.createObjectURL(file);
-    }
-  },
-  },
-};
-</script>
+  input[type="password"] {
+    width: 300px;
+  }
 
-<style>
+  button {
+    width: 270px;
+    height: 45px;
+    margin: 10px;
+    padding: 5px;
+    border: none;
+    border-radius: 25px;
+    background-color: darkorange;
+    color: white;
+    cursor: pointer;
+  }
 
-.choose-image {
-  background-color: DarkOrange;
-  color: White;
-  padding: 10px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
+  label {
+    font-size: 12px;
+    margin: 10px;
+    text-align: center;
+    color: black;
+  }
 
-.save-button,
-.sign-out-button,
-.delete-account-button {
-  margin-top: 10px;
-  width: 300px;
-  height: 50px;
-  color: White;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-}
+  label a {
+    color: darkorange;
+    text-decoration: none;
+  }
 
-.save-button {
-  background: linear-gradient(to right, #FF8C00, #FFD700);
-}
+  div {
+    background: radial-gradient(#ffffff, #ffd700);
+    height: 100%; 
+    width: 197vh;
+  }
 
-.chosen-image {
-  width: 100px;
-  height: 100px;
-  margin: 5px;
-}
+  .skottie-view {
+    height: 150px;
+    width: 150px;
+    margin-bottom: 20px;
+  }
+
+  #VerificationCodeEntry {
+    width: 300px;
+    margin: 30px 0 0 0;
+  }
+
+  #ValidateCode {
+    width: 200px;
+    margin: 5px;
+  }
+
+  .action-label {
+    font-size: 14px;
+    text-align: center;
+    color: darkorange;
+    margin: 0 0 10px 0;
+    cursor: pointer;
+  }
+
+  .separator-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    margin: 50px 0 0 0;
+  }
+
+  .separator-line {
+    height: 10px;
+    background-color: black;
+  }
+
+  .separator-label {
+    font-size: 15px;
+    text-align: center;
+    color: orangered;
+  }
+
+  .image-stack {
+    display: flex;
+    justify-content: center;
+    flex-direction: row; 
+  }
+
+  .action-image {
+    width: 50px;
+    height: 50px;
+    margin: 10px;
+    cursor: pointer;
+  }
 
 </style>
-

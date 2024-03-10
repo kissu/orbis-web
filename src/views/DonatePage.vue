@@ -1,15 +1,26 @@
 <template>
-    <div>
-    <div v-if="loading">
-      <lottie :options="defaultOptions" :width="200" :height="200"/>
+  <div class="main-container"> 
+  <div>
+    <div class="header">
+      <search-bar @search="onSearch" class="search-bar" />
+      <img :src="appIconPath" alt="Add Icon" class="add-icon" @click="addClicked" />
     </div>
-      <ul v-if="!loading">
-        <li v-for="activity in filteredActivities" :key="activity.id" @click="goToActivityDetails(activity.id)">
-          {{ activity.name }}
-        </li>
-      </ul>
+    <div v-if="loading" class="loading">
+      <lottie :options="defaultOptions" :width="200" :height="200" />
     </div>
-  </template>
+    <ul v-if="!loading" class="activity-list">
+      <li v-for="activity in filteredActivities" :key="activity.id" @click="goToActivityDetails(activity.id)">
+        <div class="activity-item">
+          <img :src="activity.image" alt="Activity Image" class="activity-image" />
+          <div class="activity-details">
+            <div class="activity-name">{{ activity.name }}</div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+</div>
+</template>
   
   <script>
 
@@ -17,11 +28,13 @@
 import { defineComponent } from 'vue';
 import Lottie from 'vue-lottie/src/lottie.vue';
 import animationData from "@/assets/animations/loading.json";
+import SearchBar from '@/components/SearchBar.vue';
 
 
 export default defineComponent({
   components: {
     Lottie,
+    SearchBar,
   },
   data() {
     return {
@@ -30,6 +43,7 @@ export default defineComponent({
       },
         activities: [],
         loading: true,
+        appIconPath: '/src/images/ic_add.png',
       };
     },
     computed: {
@@ -39,6 +53,9 @@ export default defineComponent({
     },
     mounted() {
       this.fetchActivities();
+    },
+    addClicked() {
+      this.$router.push('/newdonation'); 
     },
     methods: {
       async fetchActivities() {
@@ -63,4 +80,71 @@ export default defineComponent({
     },
   });
   </script>
+
+  <style scoped>
+
+  .main-container {
+    background-color: #517BEB;
+    height: 100%; 
+    width: 197vh;
+    overflow: hidden; 
+  }
   
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #517BEB;
+    padding: 10px;
+  }
+  
+  .search-bar {
+    width: 300px;
+    height: 30px;
+    background-color: #517BEB;
+    color: white;
+  }
+  
+  .add-icon {
+    width: 30px;
+    height: 30px;
+  }
+  
+  .loading {
+    text-align: center;
+    margin-top: 20px;
+  }
+  
+  .activity-list {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .activity-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .activity-image {
+    width: 70px;
+    height: 70px;
+    margin-right: 10px;
+  }
+  
+  .activity-details {
+    flex-grow: 1;
+  }
+  
+  .activity-name {
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  .activity-date {
+    font-size: 12px;
+    color: #404040;
+  }
+  
+  </style>

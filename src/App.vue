@@ -2,19 +2,19 @@
   <div id="app">
     <div class="app-shell">
       <router-link to="/categories" class="tab-bar">
-        <img src="/ic_emoji_people.png" alt="Categories" />
+        <img src="@/images/ic_emoji_people.png" alt="Categories" />
       </router-link>
-      <router-link to="/categories" class="tab-bar">
-        <img src="/messages.png" alt="Categories" />
+      <router-link to="/messages" class="tab-bar">
+        <img src="@/images/messages.png" alt="Messages" />
       </router-link>
-      <router-link to="/categories" class="tab-bar">
-        <img src="/ic_edit.png" alt="Categories" />
+      <router-link to="/actions" class="tab-bar">
+        <img src="@/images/ic_edit2.png" alt="Actions" />
       </router-link>
-      <router-link to="/categories" class="tab-bar">
-        <img src="/analysis.png" alt="Categories" />
+      <router-link to="/analysis" class="tab-bar">
+        <img src="@/images/analysis.png" alt="Analysis" />
       </router-link>
       <router-link to="/settings" class="tab-bar">
-        <img src="/gear_apple.png" alt="Settings" />
+        <img src="@/images/gear_apple.png" alt="Settings" />
       </router-link>
       <router-view></router-view>
     </div>
@@ -29,10 +29,10 @@ body {
   font-family: Arial, sans-serif;
 }
 
-.app-shell {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
+.app-shell { 
+  display: flex; 
+  height: 100vh; 
+  flex-direction: row; 
 }
 
 .tab-bar {

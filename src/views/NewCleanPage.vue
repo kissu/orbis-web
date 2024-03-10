@@ -117,15 +117,15 @@ export default {
       try {
         const imageId = await this.uploadImage();
 
-        this.newActivity.imageId = imageId;
+this.newActivity.imageId = imageId;
 
-        const response = await fetch('/api/v1/Activities', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(this.newActivity),
-        });
+const response = await fetch('/api/v1/Activities', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(this.newActivity),
+});
 
         if (!response.ok) {
           alert("No published");
@@ -144,7 +144,7 @@ export default {
 
 <style scoped>
 .main-container {
-  background-color: #fdb213;
+  background-color: #34CF1D;
   height: 100%; 
   width: 192vh;
   overflow: hidden; 
@@ -171,7 +171,7 @@ export default {
   padding: 5px;
   width: 100%;
   box-sizing: border-box;
-  background-color: #fdb213; 
+  background-color: #34CF1D; 
   color: white; 
   border: 1px solid white; 
 }

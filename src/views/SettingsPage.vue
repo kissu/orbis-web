@@ -1,21 +1,29 @@
 <template>
     <div class="settings-page">
-      <img :src="appIconPath" alt="App Icon" class="app-icon" @click="profileClicked"> 
+      <img :src="appIconPath" alt="App Icon" class="app-icon" @click="profileClicked">
+      <lottie :options="defaultOptions" :width="200" :height="200" @click="showInterstitial"/>
       <button class="setting-button" @click="privacyClicked">Privacy</button>
       <button class="setting-button" @click="aboutClicked">About</button>
       <button class="setting-button" @click="helpClicked">Help</button>
-      <button class="setting-button" @click="publishedClicked">Published</button>
-      <button class="setting-button" @click="joinedClicked">Joined</button>
-      <button class="setting-button" @click="likedClicked">Liked</button>
-      <button class="support-button" @click="showInterstitial">Support us!</button>
     </div>
   </template>
   
   <script>
-  export default {
-    data() {
+
+import { defineComponent } from 'vue';
+import Lottie from 'vue-lottie/src/lottie.vue';
+import animationData from "@/assets/animations/PubVideo.json"; 
+
+export default defineComponent({
+  components: {
+    Lottie
+  },
+  data() {
     return {
-      appIconPath: 'ic_launcher.png' 
+      defaultOptions: {
+        animationData: animationData
+      },
+      appIconPath: 'src/images/ic_launcher.png' 
     };
   },
     methods: {
@@ -31,20 +39,11 @@
       helpClicked() {
         this.$router.push('/help');
       },
-      publishedClicked() {
-        this.$router.push('/published');
-      },
-      joinedClicked() {
-        this.$router.push('/joined');
-      },
-      likedClicked() {
-        this.$router.push('/liked');
-      },
       showInterstitial() {
         console.log('Show Interstitial Clicked');
       },
     },
-  };
+  });
   </script>
   
 <style scoped>

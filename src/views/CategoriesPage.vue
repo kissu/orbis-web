@@ -16,12 +16,12 @@ export default {
   data() {
     return {
       categories: [
-        { id: 1, name: "SOS", image: "sos.png", textColor: "darkorange" },
-        { id: 2, name: "Gone", image: "gone.png", textColor: "darkorange" },
-        { id: 3, name: "Activities", image: "activities.png", textColor: "darkorange" },
-        { id: 4, name: "Clean", image: "ecology.png", textColor: "darkorange" },
-        { id: 5, name: "News", image: "news.png", textColor: "darkorange" },
-        { id: 6, name: "Donate", image: "donations.png", textColor: "darkorange" },
+        { id: 1, name: "SOS", image: "src/images/sos.png", textColor: "darkorange" },
+        //{ id: 2, name: "Gone", image: "src/images/gone.png", textColor: "darkorange" },
+        { id: 5, name: "News", image: "src/images/news.png", textColor: "darkorange" },
+        { id: 3, name: "Activities", image: "src/images/activities.png", textColor: "darkorange" },
+        { id: 4, name: "Clean", image: "src/images/ecology.png", textColor: "darkorange" },
+        { id: 6, name: "Charities", image: "src/images/donations.png", textColor: "darkorange" },
       ],
     };
   },
@@ -34,6 +34,7 @@ export default {
 </script>
 
 <style scoped>
+
 .categories-page {
   position: relative;
 }
@@ -44,7 +45,7 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('/categoriesback.jpg') no-repeat center center fixed;
+  background: url('src/images/categoriesback.jpg') no-repeat center center fixed;
   background-size: cover;
   z-index: -1; 
 }
@@ -59,11 +60,13 @@ export default {
 .category-item {
   display: inline-block;
   margin: 0 10px;
+  width: 400px;
   cursor: pointer;
 }
 
 .category-image {
   height: 470px;
-  width: 470;
+  flex-shrink: 0; 
 }
+
 </style>
