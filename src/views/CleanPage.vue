@@ -23,7 +23,8 @@
 </template>
   
   <script>
-
+  
+import { mapGetters } from 'vuex';
 import { defineComponent } from 'vue';
 import Lottie from 'vue-lottie/src/lottie.vue';
 import animationData from "@/assets/animations/loading.json";
@@ -48,6 +49,7 @@ export default defineComponent({
       filteredActivities() {
         return this.activities.filter(activity => activity.categoriesId === 26);
       },
+      ...mapGetters(['getUser']),
     },
     mounted() {
       this.fetchActivities();
@@ -61,8 +63,19 @@ export default defineComponent({
             throw new Error(`Network response was not ok, status: ${response.status}`);
           }
   
+          const userId = this.getUser.userId;
+          const userResponse = await fetch(`/api/v1/Users/GetUser/${userId}`);
+          if (!userResponse.ok) {
+            throw new Error(`Failed to fetch user data, status: ${userResponse.status}`);
+          }
+          const userData = await userResponse.json();
+          const blockedUserIds = userData?.Blocked_Users?.map(user => user.id) || [];
+
           const data = await response.json();
-          this.activities = data;
+          
+          this.activities = data.filter(activity => {
+            return !blockedUserIds.includes(activity.UserId) && activity.Available !== false;
+          });
         } catch (error) {
           console.error('Error fetching activities:', error);
         } finally {
@@ -78,7 +91,6 @@ export default defineComponent({
     },
   });
   </script>
-  
 
   <style scoped>
 

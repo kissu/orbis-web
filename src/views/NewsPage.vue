@@ -24,6 +24,7 @@
 
 <script>
 
+import { mapGetters } from 'vuex';
 import { defineComponent } from 'vue';
 import Lottie from 'vue-lottie/src/lottie.vue';
 import animationData from "@/assets/animations/loading.json";
@@ -44,13 +45,16 @@ export default defineComponent({
       appIconPath: '/src/images/ic_add.png',
     };
   },
+  computed: {
+      ...mapGetters(['getUser']),
+    },
   mounted() {
     this.fetchActivities();
   },
-  addClicked() {
+  methods: {
+    addClicked() {
       this.$router.push('/newnews'); 
     },
-  methods: {
     async fetchActivities() {
       try {
         const response = await fetch('/api/v1/News/GetNewsPublished');
@@ -59,8 +63,19 @@ export default defineComponent({
           throw new Error(`Network response was not ok, status: ${response.status}`);
         }
 
-        const data = await response.json();
-        this.activities = data;
+          const userId = this.getUser.userId;
+          const userResponse = await fetch(`/api/v1/Users/GetUser/${userId}`);
+          if (!userResponse.ok) {
+            throw new Error(`Failed to fetch user data, status: ${userResponse.status}`);
+          }
+          const userData = await userResponse.json();
+          const blockedUserIds = userData?.Blocked_Users?.map(user => user.id) || [];
+
+          const data = await response.json();
+          
+          this.activities = data.filter(activity => {
+            return !blockedUserIds.includes(activity.UserId) && activity.Available !== false;
+          });
       } catch (error) {
         console.error('Error fetching activities:', error);
       } finally {

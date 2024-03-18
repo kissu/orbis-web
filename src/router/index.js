@@ -29,13 +29,17 @@ import SOSPage from '@/views/SOSPage.vue';
 import TalkPage from '@/views/TalkPage.vue';
 import UpdateNewsPage from '@/views/UpdateNewsPage.vue';
 import ActionsPage from '@/views/ActionsPage.vue';
-import DonatePage from '@/views/DonatePage.vue';
+import CharitiesPage from '@/views/CharitiesPage.vue';
 import CleanPage from '@/views/CleanPage.vue';
 import NewCleanPage from '@/views/NewCleanPage.vue';
 import Lottie from 'vue-lottie';
 import MessagesPage from '@/views/MessagesPage.vue';
 import GroupMessagePage from '@/views/GroupMessagePage.vue';
 import AnalysisPage from '@/views/AnalysisPage.vue';
+import AdminPage from '@/views/AdminPage.vue'
+import UsersPage from '@/views/UsersPage.vue'
+import UserActivitiesPage from '@/views/UserActivitiesPage.vue';
+import AddAdmin from '@/views/AddAdmin.vue';
 
 app.component('lottie', Lottie);
 
@@ -71,12 +75,15 @@ const routes = [
   { path: '/sos', component: SOSPage }, 
   { path: '/talk', component: TalkPage }, 
   { path: '/updatenews', component: UpdateNewsPage }, 
-  { path: '/donate', component: DonatePage }, 
+  { path: '/charities', component: CharitiesPage }, 
   { path: '/clean', component: CleanPage }, 
   { path: '/messages', component: MessagesPage }, 
   { path: '/groupmessage/:id', name: 'groupmessage', component: GroupMessagePage }, 
   { path: '/analysis', component: AnalysisPage }, 
-  
+  { path: '/admin', component: AdminPage, meta: { requiresAuth: true, isAdmin: true } },
+  { path: '/admin/users', component: UsersPage, meta: { requiresAuth: true, isAdmin: true } },
+  { path: '/admin/addadmin', component: AddAdmin, meta: { requiresAuth: true, isAdmin: true } },
+  { path: '/admin/useractivities/:id', component: UserActivitiesPage, meta: { requiresAuth: true, isAdmin: true } },
 ];
 
 const router = createRouter({

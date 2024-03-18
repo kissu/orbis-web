@@ -5,7 +5,9 @@
     <div class="category-container">
       <div v-for="category in categories" :key="category.id" class="category-item" @click="categoryClicked(category)">
         <img :src="category.image" alt="Category Image" class="category-image">
-        <label :style="{ color: category.textColor }">{{ category.name }}</label>
+        <div class="category-title-container">
+          <label :style="{ color: category.textColor }">{{ category.name }}</label>
+        </div>
       </div>
     </div>
   </div>
@@ -39,6 +41,11 @@ export default {
   position: relative;
 }
 
+.category-title-container {
+  display: flex;
+  justify-content: center;
+}
+
 .background-image {
   position: fixed;
   top: 0;
@@ -60,7 +67,7 @@ export default {
 .category-item {
   display: inline-block;
   margin: 0 10px;
-  width: 400px;
+  width: 350px;
   cursor: pointer;
 }
 

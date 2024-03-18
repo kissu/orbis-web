@@ -1,84 +1,105 @@
 <template>
-    <div>
-      <input v-model="email" placeholder="Email" class="input-field" required/>
-      <input v-model="password" placeholder="Password" type="password" class="input-field" required/>
-      <button @click="login">Login</button>
-  
+  <div>
+    <lottie :options="defaultOptions" :width="200" :height="200" />
+    <input v-model="email" placeholder="Email" class="input-field" required/>
+    <input v-model="password" placeholder="Password" type="password" class="input-field" required/>
+    <button @click="login">Login</button>
 
-  <label @click="forgotPassword" class="action-label">
-    Forget password?
-  </label>
+    <label @click="forgotPassword" class="forget-label">
+      Forget password?
+    </label>
 
-  <label @click="signIn" class="action-label">
-    New user? Register now
-  </label>
+    <label @click="signIn" class="action-label">
+      New user? Register now
+    </label>
 
-  <div class="separator-grid">
-    <div class="separator-line"></div>
-    <label class="separator-label">Use other method</label>
-    <div class="separator-line"></div>
+    <div class="separator-grid">
+      <div class="separator-line"></div>
+      <label class="separator-label">Use other method</label>
+      <div class="separator-line"></div>
+    </div>
+
+    <div class="image-stack">
+      <img @click="googleClicked" src="/src/images/microsoft.png" alt="Microsoft" class="action-image" />
+      <img @click="appleClicked" src="/src/images/apple_logo.png" alt="Apple" class="action-image" />
+      <img @click="googleClicked" src="/src/images/google.png" alt="Google" class="action-image" />
+    </div>
   </div>
+</template>
 
-  <div class="image-stack">
-    <img @click="googleClicked" src="/src/images/microsoft.png" alt="Microsoft" class="action-image" />
-    <img @click="appleClicked" src="/src/images/apple_logo.png" alt="Apple" class="action-image" />
-    <img @click="googleClicked" src="/src/images/google.png" alt="Google" class="action-image" />
-  </div>
-    </div>
-  </template>
-  
-  <script>
-  
-  export default {
-    data() {
-      return {
-        email: '',
-        password: '',
-      };
-    },
-    methods: {
+<script>
+import { defineComponent } from 'vue';
+import Lottie from 'vue-lottie/src/lottie.vue';
+import animationData from "@/assets/animations/OrbisWorld.json";
+
+export default defineComponent({
+  components: {
+    Lottie,
+  },
+  data() {
+    return {
+      defaultOptions: {
+        animationData: animationData,
+      },
+      email: '',
+      password: '',
+    };
+  },
+  methods: {
     signIn() {
       this.$router.push('/signin'); 
     },
-      async login() {
-        try {
-          const apiUrl = '/api/v1/users/RecoverWithEmailPassword';
-  
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          'email': this.email,
-          'password': this.password,
-        }),
-      });
-  
-      if (response.ok) {
-        const user = await response.json();
-  
-        alert("yes");
-  
-        this.$store.dispatch('setUser', user);
-        this.$router.push('/profile'); 
-        
-        return { success: true };
-      } else {
-        alert("No");
-        const errorData = await response.json();
-        console.error('API Error:', errorData);
-  
-        return { success: false, error: errorData };
-      }
-    } catch (error) {
-      console.error('Fetch Error:', error);
-      return { success: false, error: error.message };
-    }
-      },
-    },
-  };
-  </script>
+    async login() {
+    try {
+        const blockedUntil = localStorage.getItem('blockedUntil');
+        if (blockedUntil && new Date(blockedUntil) > new Date()) {
+            alert('Too many login attempts. Please try again later.');
+            return;
+        }
+
+        const apiUrl = '/api/v1/users/RecoverWithEmailPassword';
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams({
+                'email': this.email,
+                'password': this.password,
+            }),
+        });
+
+        if (response.ok) {
+            localStorage.removeItem('loginAttempts');
+
+            const user = await response.json();
+            this.$store.commit('setUser', user);
+            localStorage.setItem('user', JSON.stringify(user));
+            this.$router.go(-1);
+            return { success: true };
+        } else {
+            let loginAttempts = localStorage.getItem('loginAttempts');
+            loginAttempts = loginAttempts ? parseInt(loginAttempts) + 1 : 1;
+            localStorage.setItem('loginAttempts', loginAttempts);
+
+            if (loginAttempts >= 5) {
+                const blockedUntil = new Date();
+                blockedUntil.setMinutes(blockedUntil.getMinutes() + 5);
+                localStorage.setItem('blockedUntil', blockedUntil);
+            }
+
+            alert("Invalid credentials. Please try again.");
+            const errorData = await response.json();
+            console.error('API Error:', errorData);
+            return { success: false, error: errorData };
+        }
+    } catch (error) {
+        console.error('Fetch Error:', error);
+        return { success: false, error: error.message };
+    }
+  }},
+});
+</script>
 
 <style scoped>
 
@@ -124,7 +145,7 @@
 
   button {
     width: 270px;
-    height: 45px;
+    height: 85px;
     margin: 10px;
     padding: 5px;
     border: none;

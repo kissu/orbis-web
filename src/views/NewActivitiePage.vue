@@ -24,12 +24,12 @@
       </li>
     </ul>
 
-        <textarea id="description" v-model="newActivity.description" class="input" placeholder="Enter description" required></textarea>
-        <input type="number" id="maxParticipants" v-model="newActivity.maxParticipants" class="input" placeholder="Enter max participants" required />
-        <input type="date" id="startDate" v-model="newActivity.startDate" class="input" required />
-        <input type="date" id="endDate" v-model="newActivity.endDate" class="input" required />
+      <textarea id="description" v-model="newActivity.description" class="input" placeholder="Enter description" required></textarea>
+      <input type="number" id="maxParticipants" v-model="newActivity.maxParticipants" class="input" placeholder="Enter max participants" required />
+      <input type="date" id="startDate" v-model="newActivity.startDate" class="input" required />
+      <input type="date" id="endDate" v-model="newActivity.endDate" class="input" required />
 
-        <label for="image" class="image-upload">
+    <label for="image" class="image-upload">
     <img v-if="newActivity.selectedImage" :src="newActivity.selectedImageURL" alt="Selected Image" class="upload-icon" />
     <span v-else>
       <img src="/src/images/camera.png" alt="Upload Image" class="upload-icon" />
@@ -37,7 +37,7 @@
   </label>
   <input type="file" id="image" @change="handleImageChange" accept="image/*" class="input" style="display: none;" />
 
-        <button type="submit" class="submit-button">Publish Activity</button>
+  <button type="submit" class="submit-button">Publish Activity</button>
 
     </form>
   </div>
@@ -78,7 +78,6 @@ export default {
         });
 
         if (!response.ok) {
-          console.error('JJJJJJJJJJJJJJJJJJJJJJJJ:', response);
             throw new Error(`Image upload failed, status: ${response.status}`);
         }
 

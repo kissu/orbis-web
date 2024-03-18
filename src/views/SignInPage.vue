@@ -1,68 +1,136 @@
 <template>
-    <div>
+  <div>
     <label for="image" class="image-upload">
+    <img v-if="selectedImage" :src="selectedImageURL" alt="Selected Image" class="upload-icon" style="max-width: 150px; max-height: 150px;" />
+    <span v-else>
       <img src="/src/images/camera.png" alt="Upload Image" class="upload-icon" />
+    </span>
   </label>
   <input type="file" id="image" @change="handleImageChange" accept="image/*" class="input" style="display: none;" />
-      <input v-model="email" placeholder="Email" class="input-field" required/>
-      <input v-model="name" placeholder="Name" class="input-field" required/>
-      <input v-model="password" placeholder="Password" type="password" class="input-field" required/>
-      <input v-model="password" placeholder="Confirm password" type="password" class="input-field" required/>
-      <button @click="login">Login</button>
 
+    <input v-model="email" placeholder="Email" class="input-field" required/>
+    <input v-model="name" placeholder="Name" class="input-field" required/>
+    <input v-model="password" placeholder="Password" type="password" class="input-field" required/>
+    <input v-model="confirmPassword" placeholder="Confirm password" type="password" class="input-field" required/>
+    <input v-model="verificationCode" placeholder="Verification Code" class="input-field" v-if="showVerificationCodeInput" required/>
+    <button @click="register">Register</button>
   </div>
-  
-  </template>
-  
-  <script>
-  
-  export default {
-    data() {
-      return {
-        email: '',
-        password: '',
-      };
-    },
-    methods: {
-      async login() {
-        try {
-          const apiUrl = '/api/v1/users/RecoverWithEmailPassword';
-  
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({
-          'email': this.email,
-          'password': this.password,
-        }),
-      });
-  
-      if (response.ok) {
-        const user = await response.json();
-  
-        alert("yes");
-  
-        this.$store.dispatch('setUser', user);
-        this.$router.push('/profile'); 
-        
-        return { success: true };
-      } else {
-        alert("No");
-        const errorData = await response.json();
-        console.error('API Error:', errorData);
-  
-        return { success: false, error: errorData };
-      }
-    } catch (error) {
-      console.error('Fetch Error:', error);
-      return { success: false, error: error.message };
-    }
-      },
-    },
-  };
-  </script>
+</template>
+
+<script>
+import { sha512 } from 'js-sha512'; 
+
+export default {
+  data() {
+    return {
+      email: '',
+      name: '',
+      password: '',
+      confirmPassword: '',
+      verificationCode: '',
+      showVerificationCodeInput: false,
+      verificationEmailSent: false,
+      selectedImage: null,
+      selectedImageURL: null,
+    };
+  },
+  methods: {
+    async uploadImage() {
+    try {
+        const formData = new FormData();
+        formData.append('image', this.selectedImage);
+
+        const response = await fetch('/api/v1/Images', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json', 'charset': 'utf-8'},
+            body: formData,
+        });
+
+        if (!response.ok) {
+          console.error('JJJJJJJJJJJJJJJJJJJJJJJJ:', response);
+            throw new Error(`Image upload failed, status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        return data.imageId; 
+    } catch (error) {
+        console.error('Error uploading image:', error);
+        throw error; 
+    }
+},
+
+    handleImageChange(event) {
+      const file = event.target.files[0];
+
+      this.selectedImage = file;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.selectedImageURL = reader.result;
+      };
+      reader.readAsDataURL(file);
+    },
+
+    async register() {
+  try {
+    if (this.password !== this.confirmPassword) {
+      alert("Password and confirm password do not match");
+      return;
+    }
+
+    //const imageId = await this.uploadImage();
+    const imageId = 9;
+    const identityId = this.generateGuid();
+    const salt = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+    const passwordSalted = this.password + salt;
+    const passwordHash = sha512(passwordSalted);
+
+    const apiUrl = '/api/v1/Users/AuthenticateWithEmailPasswordWeb';
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        Email: this.email, 
+        Name: this.name,
+        Modified_by: this.password,
+        PasswordHash: passwordHash, 
+        PasswordSalt : salt, 
+        IdentityId: identityId,
+        Image_id: imageId,
+      })
+    });
+
+    if (response.ok) {
+      const responseData = await response.json();
+      if (responseData.requiresVerification) {
+        this.showVerificationCodeInput = true;
+        return;
+      }
+      alert("Registration successful!");
+      this.$router.push('/logout'); 
+    } else {
+      const errorData = await response.json();
+      console.error('API Error:', errorData);
+      alert("Registration failed: " + errorData.message);
+    }
+  } catch (error) {
+    console.error('Fetch Error:', error);
+    alert("Registration failed: " + error.message);
+  }
+},
+generateGuid() {
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        const r = Math.random() * 16 | 0,
+          v = c == 'x' ? r : (r & 0x3 | 0x8);
+        return v.toString(16);
+      });
+    }
+  }
+};
+</script>
+
 
 <style scoped>
 
@@ -92,6 +160,8 @@
     justify-content: center;
     height: 100vh;
   }
+
+  
 
   input {
     width: 300px;
