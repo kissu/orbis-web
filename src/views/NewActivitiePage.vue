@@ -45,6 +45,9 @@
 </template>
 
 <script>
+
+import axios from 'axios';
+
 export default {
   data() {
     return {
@@ -67,26 +70,25 @@ export default {
   },
   methods: {
     async uploadImage() {
-    try {
-        const formData = new FormData();
-        formData.append('image', this.newActivity.selectedImage);
+  try {
+    const formData = new FormData();
+    formData.append('image', this.newActivity.selectedImage);
 
-        const response = await fetch('/api/v1/Images', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json', 'charset': 'utf-8'},
-            body: formData,
-        });
+    const response = await axios.post('/api/v1/Images', formData, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
 
-        if (!response.ok) {
-            throw new Error(`Image upload failed, status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        return data.imageId; 
-    } catch (error) {
-        console.error('Error uploading image:', error);
-        throw error; 
+    if (!response.data.success) {
+      throw new Error(`Image upload failed, status: ${response.status}`);
     }
+
+    return response.data.imageId;
+  } catch (error) {
+    console.error('Error uploading image:', error);
+    throw error;
+  }
 },
 
     handleImageChange(event) {

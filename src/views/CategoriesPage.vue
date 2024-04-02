@@ -19,8 +19,7 @@ export default {
     return {
       categories: [
         { id: 1, name: "SOS", image: "src/images/sos.png", textColor: "darkorange" },
-        //{ id: 2, name: "Gone", image: "src/images/gone.png", textColor: "darkorange" },
-        { id: 5, name: "News", image: "src/images/news.png", textColor: "darkorange" },
+        { id: 2, name: "Gone", image: "src/images/gone.png", textColor: "darkorange" },
         { id: 3, name: "Activities", image: "src/images/activities.png", textColor: "darkorange" },
         { id: 4, name: "Clean", image: "src/images/ecology.png", textColor: "darkorange" },
         { id: 6, name: "Charities", image: "src/images/donations.png", textColor: "darkorange" },

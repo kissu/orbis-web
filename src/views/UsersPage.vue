@@ -8,7 +8,7 @@
       </div>
       <div v-else>
         <ul>
-            <li v-for="user in filteredUsers" :key="user.id" @click="navigateToUserActivities(user.id)">
+        <li v-for="user in filteredUsers" :key="user.id" @click="navigateToUserActivities(user.id)">
         {{ user.name }} : 
         {{ user.email }} :
         {{ user.number }}

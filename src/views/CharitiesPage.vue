@@ -95,7 +95,7 @@ export default defineComponent({
   <style scoped>
 
   .main-container {
-    background-color: #517BEB;
+    background-color: #DD3CD6;
     height: 100%; 
     width: 197vh;
     overflow: hidden; 
@@ -105,14 +105,14 @@ export default defineComponent({
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #517BEB;
+    background-color: #DD3CD6;
     padding: 10px;
   }
   
   .search-bar {
     width: 300px;
     height: 30px;
-    background-color: #517BEB;
+    background-color: #DD3CD6;
     color: white;
   }
   

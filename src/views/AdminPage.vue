@@ -3,6 +3,8 @@
     <div class="sidebar">
       <router-link to="/admin/users" class="sidebar-item">Users</router-link>
       <router-link to="/admin/addadmin" class="sidebar-item">Admin</router-link>
+      <router-link to="/admin/checkcleaned" class="sidebar-item">Cleaned</router-link>
+      <router-link to="/admin/recoverdonation" class="sidebar-item">Donation</router-link>
       <router-link to="/admin/settings" class="sidebar-item">Settings</router-link>
     </div>
 

@@ -1,7 +1,6 @@
 <template>
     <div class="settings-page">
       <img :src="appIconPath" alt="App Icon" class="app-icon" @click="profileClicked">
-      <lottie :options="defaultOptions" :width="200" :height="200" @click="showInterstitial"/>
       <button class="setting-button" @click="privacyClicked">Privacy</button>
       <button class="setting-button" @click="aboutClicked">About</button>
       <button class="setting-button" @click="helpClicked">Help</button>
@@ -11,17 +10,14 @@
   <script>
 
 import { defineComponent } from 'vue';
-import Lottie from 'vue-lottie/src/lottie.vue';
-import animationData from "@/assets/animations/PubVideo.json"; 
 
 export default defineComponent({
   components: {
-    Lottie
+    
   },
   data() {
     return {
       defaultOptions: {
-        animationData: animationData
       },
       appIconPath: 'src/images/ic_launcher.png' 
     };
