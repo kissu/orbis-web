@@ -2,7 +2,7 @@
   <div class="categories-page">
     <div class="background-image"></div>
 
-    <div class="category-container">
+    <div class="category-container hide-scrollbar">
       <div v-for="category in categories" :key="category.id" class="category-item" @click="categoryClicked(category)">
         <img :src="category.image" alt="Category Image" class="category-image">
         <div class="category-title-container">
@@ -57,10 +57,18 @@ export default {
 }
 
 .category-container {
-  overflow-x: hidden; 
+  overflow-x: scroll; 
   white-space: nowrap;
-  padding-top: 60px;
+  padding: 50px 0px;
   text-align: center;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .category-item {

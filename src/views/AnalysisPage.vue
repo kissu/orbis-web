@@ -35,8 +35,9 @@
   
   <style scoped>
   .donut-chart-container {
-    max-width: 500px;  
     max-height: 500px; 
-    margin: auto;     
+    display: flex;
+    padding: 30px;
+    justify-content: center;
   }
   </style>

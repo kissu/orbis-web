@@ -1,6 +1,6 @@
 <!-- ActivityList.vue -->
 <template>
-    <div>
+    <div class="main-container">
       <h1>Activity List</h1>
       <ul>
         <li v-for="activity in activities" :key="activity.id">

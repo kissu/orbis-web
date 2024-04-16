@@ -1,8 +1,8 @@
 <template>
-  <div id="app">
-    <ul>
+  <div class="main-container">
+ 
       <item v-for="item in filteredItems" :key="item.Text" :item="item" @share="onShareButtonClick" />
-    </ul>
+   
   </div>
 </template>
 
@@ -54,64 +54,4 @@ export default {
 
 
 <style>
-body {
-    display: flex;
-    justify-content: center;
-    margin: 0;
-}
-
-.add-icon {
-    width: 35px;
-    height: 35px;
-    margin-bottom: 10px;
-    cursor: pointer;
-}
-
-.flex-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.flex-item {
-  flex-grow: 1;
-  margin-right: 10px;
-}
-
-#app {
-    text-align: center;
-    margin-top: 50px;
-}
-
-input[type="text"] {
-    border-radius: 10px; 
-    padding: 10px;
-}
-
-.item-container {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px;
-    border: 1px solid #ddd;
-    margin: 10px;
-}
-
-.item-image {
-    max-width: 50px;
-    max-height: 50px;
-    margin-right: 10px;
-}
-
-.item-details {
-    flex-grow: 1;
-    text-align: left;
-}
-
-.share-button {
-    padding: 5px 10px;
-    color: white;
-    border: none;
-    cursor: pointer;
-}
 </style>

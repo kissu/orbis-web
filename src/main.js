@@ -40,6 +40,10 @@ import UserActivitiesPage from './views/UserActivitiesPage.vue'
 import AddAdminPage from './views/AddAdminPage.vue'
 import RecoverDonationPage from './views/RecoverDonationPage.vue'
 import CheckCleanedPage from './views/CheckCleanedPage.vue'
+import './style.css'
+import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
 
 const app = createApp(App);
 

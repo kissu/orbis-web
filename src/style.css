@@ -1,0 +1,5 @@
+.main-container{
+  overflow: hidden; 
+  padding: 30px; 
+  min-height: 50vh;
+}

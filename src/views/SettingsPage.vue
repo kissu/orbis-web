@@ -55,7 +55,7 @@ export default defineComponent({
     align-items: center;
     justify-content: center;
     color: #FFFFFF; 
-    height: 100vh;
+    padding: 30px;
 }
 
 .app-icon {

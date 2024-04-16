@@ -96,9 +96,6 @@ export default defineComponent({
 
   .main-container {
     background-color: #DD3CD6;
-    height: 100%; 
-    width: 197vh;
-    overflow: hidden; 
   }
   
   .header {

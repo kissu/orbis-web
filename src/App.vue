@@ -1,125 +1,170 @@
 <template>
   <div id="app">
     <div class="app-shell">
-      <router-link to="/categories" class="tab-bar">
-        <img src="@/images/ic_emoji_people.png" alt="Categories" />
-      </router-link>
-      <router-link to="/messages" class="tab-bar">
-        <img src="@/images/messages.png" alt="Messages" />
-      </router-link>
-      <router-link to="/actions" class="tab-bar">
-        <img src="@/images/ic_edit2.png" alt="Actions" />
-      </router-link>
-      <router-link to="/analysis" class="tab-bar">
-        <img src="@/images/analysis.png" alt="Analysis" />
-      </router-link>
-      <router-link to="/settings" class="tab-bar">
-        <img src="@/images/gear_apple.png" alt="Settings" />
-      </router-link>
+      <nav class="nav-bar navbar navbar-expand-lg bg-body-tertiary px-5">
+        <div class="container-fluid">
+          <a class="navbar-brand" href="#">
+            <router-link to="/" class="navbar-brand tab-bar">
+              <img src="./images/orbisimage.svg" alt="Categories" />
+            </router-link>
+          </a>
+              
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+            aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0 align-items-center">
+              <li class="nav-item m-2 mx-4">
+                <router-link to="/categories" class="tab-bar">
+                  <img src="@/images/ic_emoji_people.png" alt="Categories" />
+                </router-link>
+              </li>
+              <li class="nav-item m-2 mx-4">
+
+                <router-link to="/messages" class="tab-bar">
+                  <img src="@/images/messages.png" alt="Messages" />
+                </router-link>
+              </li>
+              <li class="nav-item m-2 mx-4">
+
+                <router-link to="/actions" class="tab-bar">
+                  <img src="@/images/ic_edit2.png" alt="Actions" />
+                </router-link>
+              </li>
+              <li class="nav-item m-2 mx-4">
+
+                <router-link to="/analysis" class="tab-bar">
+                  <img src="@/images/analysis.png" alt="Analysis" />
+                </router-link>
+              </li>
+              <li class="nav-item m-2 mx-4 dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                  aria-expanded="false">
+                  <img src="@/images/gear_apple.png" alt="Settings" />
+                </a>
+                <ul class="dropdown-menu">
+                  <li><router-link to="/privacy" class="dropdown-item">Privacy</router-link></li>
+                  <li><router-link to="/about" class="dropdown-item">About</router-link></li>
+                  <li><router-link to="/help" class="dropdown-item">Help</router-link></li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <!-- <a  href="#">
+                <router-link to="/profile" class="navbar-brand tab-bar">
+                  <img src="./images/ic_launcher.png" alt="Categories" />
+                </router-link>
+              </a> -->
+        </div>
+      </nav>
+    </div>
+
+    <!-- <div class="app-shell">
+      <nav class="nav-bar">
+        <router-link to="/categories" class="tab-bar">
+          <img src="@/images/ic_emoji_people.png" alt="Categories" />
+        </router-link>
+        <router-link to="/messages" class="tab-bar">
+          <img src="@/images/messages.png" alt="Messages" />
+        </router-link>
+        <router-link to="/actions" class="tab-bar">
+          <img src="@/images/ic_edit2.png" alt="Actions" />
+        </router-link>
+        <router-link to="/analysis" class="tab-bar">
+          <img src="@/images/analysis.png" alt="Analysis" />
+        </router-link>
+        <router-link to="/settings" class="tab-bar">
+          <img src="@/images/gear_apple.png" alt="Settings" />
+        </router-link>
+      </nav>
+    </div> -->
+
+    <!-- Main content -->
+    <div class="page-content">
+
       <router-view></router-view>
     </div>
 
-    <div class="infos-content">
-      
-    <div class="social-content">
-      <a href="https://www.instagram.com/orbisoff/">
-        <img src="/src/images/instagram.png" class="social-icon" alt="Instagram" height="40" width="40"/>
-      </a>
-      <a href="https://www.youtube.com/@orbisoff"> 
-        <img src="/src/images/tik-tok.png" class="social-icon" alt="TikTok" height="40" width="40"/>
-      </a>
-      <a href="https://www.youtube.com/@orbisoff"> 
-      <img src="/src/images/youtube.png" class="social-icon" alt="YouTube" height="40" width="40"/>
-      </a>
-      <a href="https://www.facebook.com/profile.php?id=61554704694462">
-      <img src="/src/images/facebook.png" class="social-icon" alt="Facebook" height="40" width="40"/>
-      </a>
-      <a href="https://www.threads.net/@orbisoff">
-        <img src="/src/images/threads.png" class="social-icon" alt="Threads" height="40" width="40"/>
-      </a>
-      <a href="https://www.linkedin.com/in/orbis-activities-81b25b2a4/">
-        <img src="/src/images/linkedin.png" class="social-icon" alt="LinkedIn" height="40" width="40"/>
-      </a>
-      <a href="https://twitter.com/OrbisOff">
-        <img src="/src/images/twitter.png" class="social-icon" alt="LinkedIn" height="40" width="40"/>
-      </a>
-    </div>
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="infos-content">
+        <!-- Social links -->
+        <div class="social-content">
+          <a href="https://www.instagram.com/orbisoff/">
+            <img src="/src/images/instagram.png" class="social-icon" alt="Instagram" />
+          </a>
+          <a href="https://www.youtube.com/@orbisoff">
+            <img src="/src/images/tik-tok.png" class="social-icon" alt="TikTok" />
+          </a>
+          <a href="https://www.youtube.com/@orbisoff">
+            <img src="/src/images/youtube.png" class="social-icon" alt="YouTube" />
+          </a>
+          <a href="https://www.facebook.com/profile.php?id=61554704694462">
+            <img src="/src/images/facebook.png" class="social-icon" alt="Facebook" />
+          </a>
+          <a href="https://www.threads.net/@orbisoff">
+            <img src="/src/images/threads.png" class="social-icon" alt="Threads" />
+          </a>
+          <a href="https://www.linkedin.com/in/orbis-activities-81b25b2a4/">
+            <img src="/src/images/linkedin.png" class="social-icon" alt="LinkedIn" />
+          </a>
+          <a href="https://twitter.com/OrbisOff">
+            <img src="/src/images/twitter.png" class="social-icon" alt="LinkedIn" />
+          </a>
+        </div>
 
-    <div class="download-container">
-      <a href="https://l.instagram.com/?u=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.companyname.orbis.mobile%26gl%3DFR&e=AT1tC-_vLJOt7RKwSmqu9FEYbkHDD3y-yW23zB0_mHT0IH6HC9T_6zR8c8LcMWtkJN9gV5kTc7e55Y0cyr893BvOVYertacUt7Rvuj5NrOkEboZRVH_AWgk">
-        <img src="/src/images/google-play-badge.png" class="manage-button" alt="Manage Message" height="70" width="190"/>
-      </a>
-      <a href="https://apps.apple.com/fr/app/orbis-activities/id6464130945?l=en-GB">
-        <img src="/src/images/download-on-the-app-store.svg" class="manage-button" alt="Manage Message" height="155" width="335"/>
-      </a>
-    </div>
+        <div class="download-about">
+          <!-- Download section -->
+          <div class="download-container">
+            <a
+              href="https://l.instagram.com/?u=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.companyname.orbis.mobile%26gl%3DFR&e=AT1tC-_vLJOt7RKwSmqu9FEYbkHDD3y-yW23zB0_mHT0IH6HC9T_6zR8c8LcMWtkJN9gV5kTc7e55Y0cyr893BvOVYertacUt7Rvuj5NrOkEboZRVH_AWgk">
+              <img src="/src/images/google-play-badge.png" class="manage-button" alt="Manage Message" />
+            </a>
+            <a href="https://apps.apple.com/fr/app/orbis-activities/id6464130945?l=en-GB">
+              <img src="/src/images/download-on-the-app-store.svg" class="manage-button" alt="Manage Message" />
+            </a>
+          </div>
 
-    <div class="about-container">
-      <p>© 2024 Orbis - Activities</p>
+          <!-- About section -->
+          <div class="about-container">
+            <p>© 2024 Orbis - Activities</p>
+            <div class="links-container">
+              <a href="https://essama-official.github.io/Settings/Orbis.Privacy.html">Privacy Policy</a>
+              <a href="https://essama-official.github.io/Settings/Orbis.EULA.html">Terms of Service</a>
+              <a href="https://essama-official.github.io/Settings/Orbis.EULA.html">Cookie Settings</a>
+              <a href="https://essama-official.github.io/Settings/Orbis.EULA.html">Cookie Policy</a>
+              <a href="https://essama-official.github.io/Settings/Orbis.EULA.html">Help</a>
+              <a href="https://essama-official.github.io/Settings/Orbis.EULA.html">Contact Us</a>
+            </div>
+          </div>
+        </div>
 
-      <a href="https://essama-official.github.io/Settings/Orbis.Privacy.html">
-        <p>Privacy Policy</p>
-      </a>
-
-      <a href="https://essama-official.github.io/Settings/Orbis.EULA.html">
-        <p>Terms of Service</p>
-      </a>
-
-      <a href="https://essama-official.github.io/Settings/Orbis.EULA.html">
-        <p>Cookie Settings</p>
-      </a>
-
-      <a href="https://essama-official.github.io/Settings/Orbis.EULA.html">
-        <p>Cookie Policy</p>
-      </a>
-
-      <a href="https://essama-official.github.io/Settings/Orbis.EULA.html">
-        <p>Help</p>
-      </a>
-
-      <a href="https://essama-official.github.io/Settings/Orbis.EULA.html">
-        <p>Contact Us</p>
-      </a>
-
-    </div>
-  </div>
-
+      </div>
+    </footer>
   </div>
 </template>
 
-<style>
-body {
-  margin: 0;
-  padding: 0;
-  font-family: Arial, sans-serif;
+<style scoped>
+/* Your CSS styles for the navigation bar (app-shell) */
+
+.app {
+  padding: 0px;
+  margin: 0px;
 }
 
-.app-shell { 
-  display: flex; 
-  height: 100vh; 
-  flex-direction: row; 
-}
-
-.infos-content {
-  flex-grow: 1; 
-  width: 100%; 
-  padding: 20px; 
+.nav-bar {
+  border-bottom: 1px solid #e1e1e2;
+  box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.2);
+  position: fixed;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 1;
 }
 
 .tab-bar {
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  color: white;
-  height: 50px;
-  text-decoration: none;
-}
-
-.tab-bar:hover {
-  background-color: #0056b3; 
-}
-
-.tab-bar a {
   text-decoration: none;
   color: white;
 }
@@ -129,34 +174,98 @@ body {
   height: 30px;
 }
 
-.content {
-  flex-grow: 1;
-  overflow-y: auto;
+/* Your CSS styles for the page content */
+
+.page-content {
+  /* Add your styling for the main content area */
+  margin-top: 60px;
+  min-height: 50vh;
 }
 
-.download-container {
-  display: flex;
-  justify-content: center; 
-  align-items: center;
-  padding: 10px;
+/* Your CSS styles for the footer */
+
+.footer {
+  background-color: #f4f4f4;
+  padding: 20px 0;
 }
 
-.about-container {
-  display: flex;
-  justify-content: space-between; 
-}
-
-.about-container p:not(:last-child) {
-  margin-right: 15px; 
+.infos-content {
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .social-content {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
+  margin-bottom: 20px;
 }
 
-.social-icon:not(:last-child) {
-  margin-right: 5px;
+.social-icon {
+  width: 40px;
+  height: 40px;
 }
 
+
+/* ------------------------------------------------------- */
+
+.download-about {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.download-container,
+.about-container {
+  flex-basis: 45%;
+  /* Adjust as needed based on your design */
+}
+
+/* Redesigned styles for download-container */
+.download-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.manage-button {
+  width: 100%;
+  aspect-ratio: 3/2;
+  object-fit: contain;
+
+
+}
+
+/* Redesigned styles for about-container */
+.about-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.links-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.links-container a {
+  margin: 5px;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 768px) {
+  .download-about {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .download-container,
+  .about-container {
+    flex-basis: 100%;
+    /* Full width for smaller screens */
+    margin-bottom: 20px;
+  }
+}
 </style>

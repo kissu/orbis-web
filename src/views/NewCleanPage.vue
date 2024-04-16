@@ -145,10 +145,6 @@ const response = await fetch('/api/v1/Activities', {
 <style scoped>
 .main-container {
   background-color: #34CF1D;
-  height: 100%; 
-  width: 192vh;
-  overflow: hidden; 
-  padding: 20px; 
 }
 
 .upload-icon {

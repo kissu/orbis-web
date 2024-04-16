@@ -79,9 +79,6 @@
   
   .main-container {
     background-color: #fdb213;
-    height: 100%; 
-    width: 197vh;
-    overflow: hidden; 
   }
   
   .header {

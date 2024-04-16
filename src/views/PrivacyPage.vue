@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="main-container">
     <iframe :src="webPageSource" width="1000px" height="1000px" frameborder="0"></iframe>
   </div>
 </template>

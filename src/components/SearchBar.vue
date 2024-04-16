@@ -1,5 +1,5 @@
 <template>
-    <input type="text" v-model="searchQuery" @input="onSearchInput" placeholder="Search by location"/>
+    <input type="text" class="form-control" v-model="searchQuery" @input="onSearchInput" placeholder="Search by location"/>
   </template>
   
   <script>

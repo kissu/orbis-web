@@ -80,7 +80,7 @@ body {
 
 #app {
     text-align: center;
-    margin-top: 50px;
+    width: 100%;
 }
 
 input[type="text"] {

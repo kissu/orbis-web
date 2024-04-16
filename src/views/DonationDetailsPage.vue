@@ -233,9 +233,6 @@ export default {
 <style scoped> 
 .main-container {
   background-color: #517BEB;
-  height: 100%; 
-  width: 197vh;
-  overflow: hidden; 
 }
 .activity-name {
   font-size: 16px;

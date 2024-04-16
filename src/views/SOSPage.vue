@@ -257,10 +257,6 @@ calculateDistance(lat1, lon1, lat2, lon2) {
 <style scoped>
 .main-container {
   background-color: red;
-  height: 100%; 
-  width: 192vh;
-  overflow: hidden; 
-  padding: 20px; 
 }
 
 .number {

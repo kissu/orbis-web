@@ -1,8 +1,8 @@
 <template>
-  <div id="app">
-    <ul>
+  <div class="main-container">
+
       <item v-for="item in filteredItems" :key="item.Text" :item="item" @share="onShareButtonClick" />
-    </ul>
+
   </div>
 </template>
 
@@ -80,7 +80,7 @@ body {
 
 #app {
     text-align: center;
-    margin-top: 50px;
+    width: 100%;
 }
 
 input[type="text"] {

@@ -1,12 +1,15 @@
 <template>
   <div class="main-container"> 
   <div>
-    <div class="header">
-      <select v-model="selectedCategoryId" @change="filterByCategory" class="category-picker">
+    <div class="row">
+      <div class="col-lg-3">
+      <select v-model="selectedCategoryId" @change="filterByCategory" class="category-picker form-select">
           <option value="">Categories</option>
           <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
         </select>
-        <select v-model="selectedTimeInterval" @change="filterByTimeInterval" class="time-interval-picker">
+      </div>
+      <div class="col-lg-3">
+        <select v-model="selectedTimeInterval" @change="filterByTimeInterval" class="time-interval-picker form-select">
           <option value="">When</option>
           <option value="Today">Today</option>
           <option value="Tomorrow">Tomorrow</option>
@@ -14,8 +17,11 @@
           <option value="This Weekend">This Weekend</option>
           <option value="This Month">This Month</option>
         </select>
+      </div>
+      <div class="col-lg-4 d-flex">
         <search-bar @search="filterByLocation($event)" class="search-bar" />
-      <img :src="appIconPath" alt="Add Icon" class="add-icon" @click="addClicked" />
+      </div>
+      <div class="col-lg-1"><img :src="appIconPath" alt="Add Icon" class="add-icon m-0" @click="addClicked" />   </div>
     </div>
     <div v-if="loading" class="loading">
       <lottie :options="defaultOptions" :width="200" :height="200" />
@@ -27,8 +33,8 @@
             <div class="activity-name">{{ activity.name }}</div>
             <div class="activity-date">{{ formatDate(activity.start_date) }}</div>
           </div>
-          <div v-if="imageUrl" class="activity-image-container">
-            <img :src="imageUrl" alt="Activity Image" class="activity-image" />
+          <div v-if="activity.images.blob" class="activity-image-container">
+            <img :src="`data:image/jpeg;base64,${activity.images.blob}`" alt="Activity Image" class="activity-image" />
           </div>
         </div>
       </li>
@@ -43,6 +49,7 @@ import { defineComponent } from 'vue';
 import Lottie from 'vue-lottie/src/lottie.vue';
 import animationData from "@/assets/animations/loading.json";
 import SearchBar from '@/components/SearchBar.vue';
+import axios from 'axios';
 
 export default defineComponent({
   components: {
@@ -84,7 +91,6 @@ export default defineComponent({
   },
   mounted() {
     this.fetchActivities();
-    this.getImageUrl();
   },
   methods: {
     isActivityInSelectedTimeInterval(activity) {
@@ -139,29 +145,21 @@ export default defineComponent({
       this.activities = this.activities.filter(activity => activity.categoriesId === this.selectedCategoryId);
     } 
   },
-    async getImageUrl() {
-      try {
-        const imageResponse = await fetch('/api/v1/Images/GetImageBlobById/30');
-        if (!imageResponse.ok) {
-          throw new Error(`Failed to fetch image, status: ${imageResponse.status}`);
-        }
-        const imageData = await imageResponse.blob(); 
-        const imageUrl = URL.createObjectURL(imageData);
-        
-        this.imageUrl = imageUrl;
-      } catch (error) {
-        console.error('Error fetching image:', error);
-      }
-    },
+  async getImageUrl(id) {
+  try {             
+    const response = axios.get(`/api/v1/Images/GetImageBlobById/${id}`);
+    this.imageUrl = `data:image/jpeg;base64,${response.data}`;
+  } catch (error) {
+    console.error('Error fetching image:', error);
+  }
+},
     addClicked() {
       this.$router.push('/newactivitie'); 
     },
     async fetchActivities() {
     try {
-    const response = await fetch('/api/v1/Activities/all');
-    if (!response.ok) {
-      throw new Error(`Network response was not ok, status: ${response.status}`);
-    }
+
+    const response = await axios.get('/api/v1/Activities/all');
     
     const userId = this.getUser.userId;
     const userResponse = await fetch(`/api/v1/Users/GetUser/${userId}`);
@@ -171,8 +169,8 @@ export default defineComponent({
     const userData = await userResponse.json();
     const blockedUserIds = userData?.Blocked_Users?.map(user => user.id) || [];
 
-    const data = await response.json();
-    
+    const data = await response?.data;
+    console.log("data",data);
     this.activities = data.filter(activity => {
       return !blockedUserIds.includes(activity.UserId) && activity.Available !== false;
     });
@@ -181,7 +179,7 @@ export default defineComponent({
   } finally {
     this.loading = false;
   }
-},
+    },
     goToActivityDetails(id) {
       this.$router.push({ name: 'activitiesdetails', params: { id } });
     },
@@ -197,9 +195,6 @@ export default defineComponent({
 
 .main-container {
   background-color: #fdb213;
-  height: 100%; 
-  width: 197vh;
-  overflow: hidden; 
 }
 
 .header {
@@ -211,15 +206,14 @@ export default defineComponent({
 }
 
 .search-bar {
-  width: 300px;
-  height: 30px;
+  height: 35px;
   background-color: #fdb213;
   color: white;
 }
 
 .add-icon {
-  width: 30px;
-  height: 30px;
+  width: 35px;
+  height: 35px;
 }
 
 .loading {
