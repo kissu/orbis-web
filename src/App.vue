@@ -3,11 +3,6 @@
     <div class="app-shell">
       <nav class="nav-bar navbar navbar-expand-lg bg-body-tertiary px-5">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">
-            <router-link to="/" class="navbar-brand tab-bar">
-              <img src="./images/orbisimage.svg" alt="Categories" />
-            </router-link>
-          </a>
               
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
             data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
@@ -22,75 +17,37 @@
                 </router-link>
               </li>
               <li class="nav-item m-2 mx-4">
-
                 <router-link to="/messages" class="tab-bar">
                   <img src="@/images/messages.png" alt="Messages" />
                 </router-link>
               </li>
               <li class="nav-item m-2 mx-4">
-
                 <router-link to="/actions" class="tab-bar">
                   <img src="@/images/ic_edit2.png" alt="Actions" />
                 </router-link>
               </li>
               <li class="nav-item m-2 mx-4">
-
                 <router-link to="/analysis" class="tab-bar">
                   <img src="@/images/analysis.png" alt="Analysis" />
                 </router-link>
               </li>
-              <li class="nav-item m-2 mx-4 dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
-                  aria-expanded="false">
-                  <img src="@/images/gear_apple.png" alt="Settings" />
-                </a>
-                <ul class="dropdown-menu">
-                  <li><router-link to="/privacy" class="dropdown-item">Privacy</router-link></li>
-                  <li><router-link to="/about" class="dropdown-item">About</router-link></li>
-                  <li><router-link to="/help" class="dropdown-item">Help</router-link></li>
-                </ul>
-              </li>
+              <li class="nav-item m-2 mx-4">
+                <router-link to="/settings" class="tab-bar">
+                  <img src="@/images/gear_apple.png" alt="Profile" />
+                </router-link>
+                </li>
             </ul>
           </div>
-          <!-- <a  href="#">
-                <router-link to="/profile" class="navbar-brand tab-bar">
-                  <img src="./images/ic_launcher.png" alt="Categories" />
-                </router-link>
-              </a> -->
         </div>
       </nav>
     </div>
 
-    <!-- <div class="app-shell">
-      <nav class="nav-bar">
-        <router-link to="/categories" class="tab-bar">
-          <img src="@/images/ic_emoji_people.png" alt="Categories" />
-        </router-link>
-        <router-link to="/messages" class="tab-bar">
-          <img src="@/images/messages.png" alt="Messages" />
-        </router-link>
-        <router-link to="/actions" class="tab-bar">
-          <img src="@/images/ic_edit2.png" alt="Actions" />
-        </router-link>
-        <router-link to="/analysis" class="tab-bar">
-          <img src="@/images/analysis.png" alt="Analysis" />
-        </router-link>
-        <router-link to="/settings" class="tab-bar">
-          <img src="@/images/gear_apple.png" alt="Settings" />
-        </router-link>
-      </nav>
-    </div> -->
-
-    <!-- Main content -->
     <div class="page-content">
-
       <router-view></router-view>
     </div>
 
-    <!-- Footer -->
     <footer class="footer">
       <div class="infos-content">
-        <!-- Social links -->
         <div class="social-content">
           <a href="https://www.instagram.com/orbisoff/">
             <img src="/src/images/instagram.png" class="social-icon" alt="Instagram" />
@@ -116,7 +73,6 @@
         </div>
 
         <div class="download-about">
-          <!-- Download section -->
           <div class="download-container">
             <a
               href="https://l.instagram.com/?u=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dcom.companyname.orbis.mobile%26gl%3DFR&e=AT1tC-_vLJOt7RKwSmqu9FEYbkHDD3y-yW23zB0_mHT0IH6HC9T_6zR8c8LcMWtkJN9gV5kTc7e55Y0cyr893BvOVYertacUt7Rvuj5NrOkEboZRVH_AWgk">
@@ -127,7 +83,6 @@
             </a>
           </div>
 
-          <!-- About section -->
           <div class="about-container">
             <p>© 2024 Orbis - Activities</p>
             <div class="links-container">
@@ -147,7 +102,6 @@
 </template>
 
 <style scoped>
-/* Your CSS styles for the navigation bar (app-shell) */
 
 .app {
   padding: 0px;
@@ -174,15 +128,10 @@
   height: 30px;
 }
 
-/* Your CSS styles for the page content */
-
 .page-content {
-  /* Add your styling for the main content area */
   margin-top: 60px;
   min-height: 50vh;
 }
-
-/* Your CSS styles for the footer */
 
 .footer {
   background-color: #f4f4f4;
@@ -205,9 +154,6 @@
   height: 40px;
 }
 
-
-/* ------------------------------------------------------- */
-
 .download-about {
   display: flex;
   flex-wrap: wrap;
@@ -218,10 +164,8 @@
 .download-container,
 .about-container {
   flex-basis: 45%;
-  /* Adjust as needed based on your design */
 }
 
-/* Redesigned styles for download-container */
 .download-container {
   display: flex;
   justify-content: center;
@@ -232,11 +176,8 @@
   width: 100%;
   aspect-ratio: 3/2;
   object-fit: contain;
-
-
 }
 
-/* Redesigned styles for about-container */
 .about-container {
   display: flex;
   flex-direction: column;
@@ -254,7 +195,6 @@
   margin: 5px;
 }
 
-/* Media query for smaller screens */
 @media (max-width: 768px) {
   .download-about {
     flex-direction: column;
@@ -264,7 +204,6 @@
   .download-container,
   .about-container {
     flex-basis: 100%;
-    /* Full width for smaller screens */
     margin-bottom: 20px;
   }
 }

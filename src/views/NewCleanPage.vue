@@ -1,131 +1,117 @@
 <template>
-    <div class="main-container"> 
-  <div>
-    <form @submit.prevent="publishActivity" class="form-container">
+  <div class="main-container">
+    <div>
+      <form @submit.prevent="publishClean" class="form-container">
+        <div class="row text-start">
+          <div class="col-lg-6">
+            <div class="form-group">
+              <label class="align-label">
+                Enter name: <span class="text-danger">*</span>
+              </label>
+              <input type="text" id="name" v-model="newClean.name" class="input" placeholder="Enter name" required />
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="form-group">
+              <label class="align-label">
+                Enter location: <span class="text-danger">*</span>
+              </label>
+              <input v-model="newClean.location" placeholder="Enter location" @input="onTextChanged" :style="{ color: textColor }" class="input" />
+            </div>
+          </div>
+        </div>
+        <div class="row text-start">
+          <div class="col-lg-12">
+            <div class="form-group">
+              <label class="align-label">
+                Enter description: <span class="text-danger">*</span>
+              </label>
+              <textarea id="description" v-model="newClean.description" class="input" placeholder="Enter description" required></textarea>
+            </div>
+          </div>
+        </div>
 
-      <input type="text" id="name" v-model="newActivity.name" class="input" placeholder="Enter name" required />
-
-      <select id="category" v-model="newActivity.categoryId" class="input" required>
-        <option v-for="category in categories" :key="category.id" :value="category.id" >
-          {{ category.name }}
-        </option>
-      </select>
-
-      <input
-        v-model="newActivity.location"
-        placeholder="Enter location"
-        @input="onTextChanged"
-        :style="{ color: textColor }"
-        class="input" />
-
-    <ul>
-      <li v-for="suggestion in suggestions" :key="suggestion" class="suggestion-item">
-        {{ suggestion }}
-      </li>
-    </ul>
-
-        <textarea id="description" v-model="newActivity.description" class="input" placeholder="Enter description" required></textarea>
-        <input type="number" id="maxParticipants" v-model="newActivity.maxParticipants" class="input" placeholder="Enter max participants" required />
-        <input type="date" id="startDate" v-model="newActivity.startDate" class="input" required />
-        <input type="date" id="endDate" v-model="newActivity.endDate" class="input" required />
+        <ul>
+          <li v-for="suggestion in suggestions" :key="suggestion" class="suggestion-item">
+            {{ suggestion }}
+          </li>
+        </ul>
 
         <label for="image" class="image-upload">
-    <img v-if="newActivity.selectedImage" :src="newActivity.selectedImageURL" alt="Selected Image" class="upload-icon" />
-    <span v-else>
-      <img src="/src/images/camera.png" alt="Upload Image" class="upload-icon" />
-    </span>
-  </label>
-  <input type="file" id="image" @change="handleImageChange" accept="image/*" class="input" style="display: none;" />
+          <img v-if="newClean.selectedImage" :src="newClean.selectedImageURL" alt="Selected Image"
+            class="upload-icon" />
+          <span v-else>
+            <img src="/src/images/camera.png" alt="Upload Image" class="upload-icon" />
+          </span>
+        </label>
+        <input type="file" id="image" @change="handleImageChange" accept="image/*" class="input"
+          style="display: none;" />
 
-        <button type="submit" class="submit-button">Publish Activity</button>
+        <button type="submit" class="submit-button">Publish clean</button>
 
-    </form>
-  </div>
+      </form>
+    </div>
   </div>
 </template>
 
 <script>
+
+import axios from 'axios';
+
 export default {
   data() {
     return {
-      newActivity: {
+      newClean: {
         name: "",
-        categoryId: null,
         description: "",
-        maxParticipants: 0,
         location: "",
-        startDate: "",
-        endDate: "",
         selectedImage: null,
         selectedImageURL: null,
+        startDate: "",
+        endDate: "",
       },
-      categories: [], 
     };
-  },
-  mounted() {
-    this.fetchCategories();
   },
   methods: {
     async uploadImage() {
-    try {
-        const formData = new FormData();
-        formData.append('image', this.newActivity.selectedImage);
-
-        const response = await fetch('/api/v1/Images', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json', 'charset': 'utf-8'},
-            body: formData,
-        });
-
-        if (!response.ok) {
-          console.error('JJJJJJJJJJJJJJJJJJJJJJJJ:', response);
-            throw new Error(`Image upload failed, status: ${response.status}`);
+      try {
+        const data = {
+          "id": 0,
+          "category_id": 2,
+          "blob": this.newClean.selectedImageURL.split(',')[1]
         }
-
-        const data = await response.json();
-        return data.imageId; 
-    } catch (error) {
+        const response = await axios.post('/api/v1/Images', data);
+        console.log("response",response)
+        return response.data.id;
+      } catch (error) {
         console.error('Error uploading image:', error);
-        throw error; 
-    }
-},
-
+        throw error;
+      }
+    },
     handleImageChange(event) {
       const file = event.target.files[0];
 
-      this.newActivity.selectedImage = file;
+      this.newClean.selectedImage = file;
 
       const reader = new FileReader();
       reader.onload = () => {
-        this.newActivity.selectedImageURL = reader.result;
+        this.newClean.selectedImageURL = reader.result;
       };
       reader.readAsDataURL(file);
     },
-    async fetchCategories() {
-      try {
-        const response = await fetch('/api/v1/Categories/all');
-        if (!response.ok) {
-          throw new Error(`Network response was not ok, status: ${response.status}`);
-        }
-        const data = await response.json();
-        this.categories = data;
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    },
-    async publishActivity() {
+    async publishClean() {
       try {
         const imageId = await this.uploadImage();
 
-this.newActivity.imageId = imageId;
+        this.newClean.imageId = imageId;
 
-const response = await fetch('/api/v1/Activities', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(this.newActivity),
-});
+        const response = await fetch('/api/v1/Clean', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(this.newClean),
+        });
 
         if (!response.ok) {
           alert("No published");
@@ -133,9 +119,10 @@ const response = await fetch('/api/v1/Activities', {
         }
 
         const data = await response.json();
-        alert("published successfully")
+        alert("published successfully");
+        this.$router.go(-1);
       } catch (error) {
-        console.error('Error publishing activity:', error);
+        console.error('Error publishing clean:', error);
       }
     },
   },
@@ -170,6 +157,7 @@ const response = await fetch('/api/v1/Activities', {
   background-color: #34CF1D; 
   color: white; 
   border: 1px solid white; 
+  height: 35px;
 }
 
 .input::placeholder {
@@ -190,12 +178,13 @@ const response = await fetch('/api/v1/Activities', {
   color: white;
   padding: 10px;
   border: none;
-  border-radius: 15px; 
+  border-radius: 25px; 
   cursor: pointer;
   text-align: center;
   margin: auto;
   width: 300px;
   height: 45px;
+  margin-top: 15px;
 }
 
 </style>

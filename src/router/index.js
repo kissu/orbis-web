@@ -3,14 +3,19 @@ import ActivitiePage from '../views/ActivitiePage.vue';
 import LogoutPage from '../views/LogoutPage.vue';
 import SettingsPage from '../views/SettingsPage.vue';
 import PrivacyPage from '../views/PrivacyPage.vue';
+import GonePage from '../views/GonePage.vue';
 import ActivitieDetailsPage from '../views/ActivitieDetailsPage.vue'
 import CleanDetailsPage from '../views/CleanDetailsPage.vue'
 import HelpPage from '../views/HelpPage.vue'
 import JoinedActivitiePage from '../views/JoinedActivitiePage.vue'
 import LikedActivitiePage from '../views/LikedActivitiePage.vue'
+import LikedCleanPage from '../views/LikedCleanPage.vue'
+import LikedCharitiesPage from '../views/LikedCharitiesPage.vue'
 import NewActivitiePage from '../views/NewActivitiePage.vue'
 import ProfilePage from '../views/ProfilePage.vue'
-import PublishedPage from '../views/PublishedPage.vue'
+import ActivitiesPublishedPage from './views/ActivitiesPublishedPage.vue'
+import CleanPublishedPage from './views/CleanPublishedPage.vue'
+import CharitiesPublishedPage from './views/CharitiesPublishedPage.vue'
 import UpdateActivitiePage from '../views/UpdateActivitiePage.vue'
 import AboutPage from '../views/AboutPage.vue'
 import SignInPage from '../views/SignInPage.vue'
@@ -41,16 +46,21 @@ app.component('lottie', Lottie);
 
 const routes = [
   { path: '/activities', component: ActivitiePage }, 
+  { path: '/gone', component: GonePage }, 
   { path: '/logout', component: LogoutPage }, 
   { path: '/settings', component: SettingsPage }, 
   { path: '/privacy', component: PrivacyPage }, 
   { path: '/activitiesdetails/:id', name: 'activitiesdetails', component: ActivitieDetailsPage },
   { path: '/help', component: HelpPage }, 
   { path: '/joined', component: JoinedActivitiePage }, 
-  { path: '/liked', component: LikedActivitiePage }, 
+  { path: '/activitiesliked', component: LikedActivitiePage }, 
+  { path: '/cleanliked', component: LikedCleanPage }, 
+  { path: '/charitiesliked', component: LikedCharitiesPage }, 
   { path: '/newactivitie', component: NewActivitiePage }, 
   { path: '/profile', component: ProfilePage }, 
-  { path: '/publish', component: PublishedPage }, 
+  { path: '/activitiespublished', component: ActivitiesPublishedPage, meta: { requiresAuth: true } }, 
+  { path: '/cleanpublished', component: CleanPublishedPage, meta: { requiresAuth: true } }, 
+  { path: '/charitiespublished', component: CharitiesPublishedPage, meta: { requiresAuth: true } }, 
   { path: '/update', component: UpdateActivitiePage }, 
   { path: '/about', component: AboutPage }, 
   { path: '/signin', component: SignInPage }, 
@@ -61,7 +71,7 @@ const routes = [
   { path: '/contact', component: ContactPage }, 
   { path: '/donationdetails/:id', name: 'donationdetails', component: DonationDetailsPage }, 
   { path: '/cleandetails/:id', name: 'cleandetails', component: CleanDetailsPage },
-  { path: '/newdonation', component: NewDonationPage }, 
+  { path: '/newdonation', component: NewDonationPage, meta: { requiresAuth: true }}, 
   { path: '/newclean', component: NewCleanPage }, 
   { path: '/sos', component: SOSPage }, 
   { path: '/talk', component: TalkPage }, 

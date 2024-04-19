@@ -67,7 +67,7 @@
       async likeActivity() {
     try {
       const userId = this.getUser.userId;
-      const response = await fetch(`/api/v1/Users/LikeActivitie/${this.activity.id}/${userId}`, {
+      const response = await fetch(`/api/v1/Users/LikeClean/${this.activity.id}/${userId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${this.oauthToken}`

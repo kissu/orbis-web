@@ -9,10 +9,11 @@
       <ul v-if="!loading" class="activity-list">
         <li v-for="activity in activities" :key="activity.id" @click="goToGroupMessage(activity.id)">
           <div class="activity-item">
-            <img :src="activity.image" alt="Activity Image" class="activity-image" />
+            <div v-if="activity.images.blob" class="activity-image-container">
+            <img :src="`data:image/jpeg;base64,${activity.images.blob}`" alt="Activity Image" class="activity-image" />
+            </div>
             <div class="activity-details">
               <div class="activity-name">{{ activity.name }}</div>
-              <div class="activity-date">{{ formatDate(activity.start_date) }}</div>
             </div>
           </div>
         </li>
@@ -22,10 +23,11 @@
   </template>
   
   <script>
-  import { defineComponent } from 'vue';
-  import Lottie from 'vue-lottie/src/lottie.vue';
-  import animationData from "@/assets/animations/loading.json";
-  
+import { defineComponent } from 'vue';
+import Lottie from 'vue-lottie/src/lottie.vue';
+import animationData from "@/assets/animations/loading.json";
+import { mapGetters } from 'vuex';
+
   export default defineComponent({
     components: {
       Lottie
@@ -41,9 +43,7 @@
       };
     },
     computed: {
-      filteredActivities() {
-        return this.activities.filter(activity => activity.categoriesId !== 20 && activity.categoriesId !== 26);
-      },
+      ...mapGetters(['getUser']),
     },
     mounted() {
       this.fetchActivities();
@@ -51,11 +51,11 @@
     methods: {
       async fetchActivities() {
         try {
-          const response = await fetch('/api/v1/Activities/GetJoinedActivitiesByUserId/172');
+          const userId = this.getUser.userId;
+          const response = await fetch(`/api/v1/Activities/GetJoinedActivitiesByUserId/${userId}`);
           if (!response.ok) {
             throw new Error(`Network response was not ok, status: ${response.status}`);
           }
-          console.log('Lottie Options:', this.defaultOptions);
           const data = await response.json();
           this.activities = data;
         } catch (error) {
@@ -70,6 +70,14 @@
       formatDate(date) {
         return date; 
       },
+      async getImageUrl(id) {
+      try {             
+        const response = axios.get(`/api/v1/Images/GetImageBlobById/${id}`);
+        this.imageUrl = `data:image/jpeg;base64,${response.data}`;
+      } catch (error) {
+        console.error('Error fetching image:', error);
+      }
+    },
     },
   });
   </script>
@@ -77,22 +85,16 @@
   
   <style scoped>
   
-  .main-container {
-    background-color: #fdb213;
-  }
-  
   .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    background-color: #fdb213;
     padding: 10px;
   }
   
   .search-bar {
     width: 300px;
     height: 30px;
-    background-color: #fdb213;
     color: white;
   }
   
@@ -119,8 +121,8 @@
   }
   
   .activity-image {
-    width: 70px;
-    height: 70px;
+    width: 150px;
+    height: 100px;
     margin-right: 10px;
   }
   
@@ -131,7 +133,6 @@
   .activity-name {
     font-size: 16px;
     font-weight: bold;
-    color: white;
   }
   
   .activity-date {

@@ -9,10 +9,14 @@ import ActivitieDetailsPage from './views/ActivitieDetailsPage.vue'
 import HelpPage from './views/HelpPage.vue'
 import JoinedActivitiePage from './views/JoinedActivitiePage.vue'
 import LikedActivitiePage from './views/LikedActivitiePage.vue'
+import LikedCleanPage from './views/LikedCleanPage.vue'
+import LikedCharitiesPage from './views/LikedCharitiesPage.vue'
 import NewActivitiePage from './views/NewActivitiePage.vue'
 import CleanDetailsPage from './views/CleanDetailsPage.vue'
 import ProfilePage from './views/ProfilePage.vue'
-import PublishedPage from './views/PublishedPage.vue'
+import ActivitiesPublishedPage from './views/ActivitiesPublishedPage.vue'
+import CleanPublishedPage from './views/CleanPublishedPage.vue'
+import CharitiesPublishedPage from './views/CharitiesPublishedPage.vue'
 import UpdateActivitiePage from './views/UpdateActivitiePage.vue'
 import AboutPage from './views/AboutPage.vue'
 import SignInPage from './views/SignInPage.vue'
@@ -27,6 +31,7 @@ import TalkPage from '@/views/TalkPage.vue';
 import ActionsPage from '@/views/ActionsPage.vue';
 import CharitiesPage from '@/views/CharitiesPage.vue';
 import CleanPage from '@/views/CleanPage.vue';
+import GonePage from '@/views/GonePage.vue';
 import NewCleanPage from '@/views/NewCleanPage.vue';
 import Lottie from 'vue-lottie';
 import MessagesPage from './views/MessagesPage.vue'
@@ -43,7 +48,6 @@ import CheckCleanedPage from './views/CheckCleanedPage.vue'
 import './style.css'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-
 
 const app = createApp(App);
 
@@ -66,11 +70,15 @@ const router = createRouter({
     { path: '/activitiesdetails/:id', name: 'activitiesdetails', component: ActivitieDetailsPage, meta: { requiresAuth: true } },
     { path: '/help', component: HelpPage }, 
     { path: '/joined', component: JoinedActivitiePage, meta: { requiresAuth: true } }, 
-    { path: '/liked', component: LikedActivitiePage, meta: { requiresAuth: true } }, 
+    { path: '/activitiesliked', component: LikedActivitiePage, meta: { requiresAuth: true } }, 
+    { path: '/cleanliked', component: LikedCleanPage, meta: { requiresAuth: true } },  
+    { path: '/charitiesliked', component: LikedCharitiesPage, meta: { requiresAuth: true } }, 
     { path: '/newactivitie', component: NewActivitiePage, meta: { requiresAuth: true } },
     { path: '/cleandetails/:id', name: 'cleandetails', component: CleanDetailsPage, meta: { requiresAuth: true } },
     { path: '/profile', component: ProfilePage, meta: { requiresAuth: true } }, 
-    { path: '/publish', component: PublishedPage, meta: { requiresAuth: true } }, 
+    { path: '/activitiespublished', component: ActivitiesPublishedPage, meta: { requiresAuth: true } }, 
+    { path: '/cleanpublished', component: CleanPublishedPage, meta: { requiresAuth: true } }, 
+    { path: '/charitiespublished', component: CharitiesPublishedPage, meta: { requiresAuth: true } }, 
     { path: '/update', component: UpdateActivitiePage, meta: { requiresAuth: true } }, 
     { path: '/about', component: AboutPage }, 
     { path: '/signin', component: SignInPage }, 
@@ -85,11 +93,13 @@ const router = createRouter({
     { path: '/sos', component: SOSPage, meta: { requiresAuth: true } }, 
     { path: '/talk', component: TalkPage }, 
     { path: '/charities', component: CharitiesPage }, 
+    { path: '/gone', component: GonePage }, 
     { path: '/clean', component: CleanPage }, 
     { path: '/messages', component: MessagesPage }, 
     { path: '/groupmessage/:id', name: 'groupmessage', component: GroupMessagePage }, 
     { path: '/analysis', component: AnalysisPage }, 
     { path: '/admin/checkcleaned', name: 'checkcleaned', component: CheckCleanedPage, meta: { requiresAuth: true } }, 
+    { path: '/', component: CategoriesPage },
   ],
 })
 

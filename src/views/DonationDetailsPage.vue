@@ -1,5 +1,5 @@
 <template>
-  <div class="main-name">
+  <div class="main-container">
     <h2>{{ activity.name }}</h2>
     <p>{{ activity.description }}</p>
     <div>
@@ -54,7 +54,7 @@ export default {
     async likeActivity() {
     try {
       const userId = this.getUser.userId;
-      const response = await fetch(`/api/v1/Users/LikeActivitie/${this.activity.id}/${userId}`, {
+      const response = await fetch(`/api/v1/Users/LikeCharitie/${this.activity.id}/${userId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${this.oauthToken}`
@@ -132,7 +132,7 @@ export default {
     },
     async fetchActivityDetails(id) {
       try {
-        const response = await fetch(`/api/v1/Activities/${id}`);
+        const response = await fetch(`/api/v1/Charities/${id}`);
 
         if (!response.ok) {
           throw new Error(`Network response was not ok, status: ${response.status}`);
@@ -170,7 +170,7 @@ export default {
     } catch (error) {
         console.error('Erreur lors de la vérification des activités aimées et rejointes par l\'utilisateur:', error);
     }
-},
+  },
     async submitReport() {
       try {
         if (this.selectedReason) {
@@ -196,7 +196,7 @@ export default {
     async getStripeSessionUrl(activityName) {
       try {
         const amountInCents = this.donationAmount * 100;
-        const response = await fetch(`/api/v1/Activities/CheckOut/${amountInCents}/${activityName}`, { method: 'POST' });
+        const response = await fetch(`/api/v1/Charities/CheckOut/${amountInCents}/${activityName}`, { method: 'POST' });
         if (!response.ok) {
           throw new Error(`Failed to get Stripe session URL, status: ${response.status}`);
         }
@@ -214,25 +214,13 @@ export default {
       }
       this.getStripeSessionUrl(this.activity.name);
     },
-    async fetchActivityDetails(id) {
-      try {
-        const response = await fetch(`/api/v1/Activities/${id}`);
-        if (!response.ok) {
-          throw new Error(`Network response was not ok, status: ${response.status}`);
-        }
-        const data = await response.json();
-        this.activity = data;
-      } catch (error) {
-        console.error('Error fetching activity details:', error);
-      }
-    },
   },
 };
 </script>
 
 <style scoped> 
 .main-container {
-  background-color: #517BEB;
+  background-color: #DD3CD6;
 }
 .activity-name {
   font-size: 16px;

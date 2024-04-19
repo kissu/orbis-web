@@ -1,57 +1,151 @@
 <template>
-  <div class="main-container">
- 
-      <item v-for="item in filteredItems" :key="item.Text" :item="item" @share="onShareButtonClick" />
-   
+  <div class="main-container"> 
+    <div>
+      <div class="row">
+        <div class="col-lg-3">
+          <div v-if="loading" class="loading">
+            <lottie :options="defaultOptions" :width="200" :height="200" />
+          </div>
+          <ul v-if="!loading" class="activity-list">
+            <li v-for="activity in filteredActivities" :key="activity.id" @click="goToActivityDetails(activity.id)">
+              <div class="activity-item">
+                <div v-if="activity.images.blob" class="activity-image-container">
+                  <img :src="`data:image/jpeg;base64,${activity.images.blob}`" alt="Activity Image" class="activity-image" />
+                </div>
+                <div class="activity-details">
+                  <div class="activity-name">{{ activity.name }}</div>
+                  <div class="activity-date">{{ formatDate(activity.start_date) }}</div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
-import Item from '@/components/Item.vue';
+import { mapGetters } from 'vuex';
+import { defineComponent } from 'vue';
+import Lottie from 'vue-lottie/src/lottie.vue';
+import animationData from "@/assets/animations/loading.json";
+import SearchBar from '@/components/SearchBar.vue';
+import axios from 'axios';
 
-export default {
+export default defineComponent({
   components: {
-    Item,
+    Lottie,
   },
   data() {
     return {
-      selectedCategory: "All", 
-      appIconPath: 'ic_add.png',
-      items: [
-        { Image: 'image1.png', Text: 'Item 1', Start_date: new Date(), IsNotShared: true, Category: 'Category1' },
-        { Image: 'image2.png', Text: 'Item 2', Start_date: new Date(), IsNotShared: true, Category: 'Category2' },
-        { Image: 'image1.png', Text: 'Item 3', Start_date: new Date(), IsNotShared: true, Category: 'Category3' },
-        { Image: 'image2.png', Text: 'Item 4', Start_date: new Date(), IsNotShared: true, Category: 'Category4' },
-        { Image: 'image1.png', Text: 'Item 5', Start_date: new Date(), IsNotShared: true, Category: 'Category5' },
-      ],
+      defaultOptions: {
+        animationData: animationData,
+      },
+      imageUrl: '', 
+      activities: [],
+      loading: true,
     };
   },
   computed: {
-    filteredItems() {
-      return this.selectedCategory === "All"
-        ? this.items
-        : this.items.filter(item => item.Category === this.selectedCategory);
-    },
+    ...mapGetters(['getUser']),
+  },
+  mounted() {
+    this.fetchActivities();
   },
   methods: {
-    addClicked() {
-      this.$router.push('/newactivitie');
+  async getImageUrl(id) {
+  try {             
+    const response = axios.get(`/api/v1/Images/GetImageBlobById/${id}`);
+    this.imageUrl = `data:image/jpeg;base64,${response.data}`;
+  } catch (error) {
+    console.error('Error fetching image:', error);
+  }
+  },
+    async fetchActivities() {
+    try {
+    const userId = this.getUser.userId;
+    const response = await axios.get(`/api/v1/Activities/GetJoinedActivitiesByUserId/${userId}`);
+    const data = await response?.data;
+    this.activities = data; 
+  } catch (error) {
+    console.error('Error fetching activities:', error);
+  } finally {
+    this.loading = false;
+  }
     },
-    onShareButtonClick(isNotShared) {
-      if (isNotShared) {
-        alert('Item shared!');
-      } else {
-        alert('Item is already shared.');
-      }
+    goToActivityDetails(id) {
+      this.$router.push({ name: 'activitiesdetails', params: { id } });
     },
-    onSearch(query) {
-    },
-    onCategoryChange() {
+    formatDate(date) {
+      return date; 
     },
   },
-};
+});
 </script>
 
 
-<style>
+<style scoped>
+
+.main-container {
+  background-color: #fdb213;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fdb213;
+  padding: 10px;
+}
+
+.search-bar {
+  height: 35px;
+  background-color: #fdb213;
+  color: white;
+}
+
+.add-icon {
+  width: 40px;
+  height: 40px;
+}
+
+.loading {
+  text-align: center;
+  margin-top: 20px;
+}
+
+.activity-list {
+  list-style: none;
+  padding: 0;
+}
+
+.activity-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+
+.activity-image {
+  width: 150px;
+  height: 100px;
+  margin-right: 10px;
+}
+
+.activity-details {
+  flex-grow: 1;
+}
+
+.activity-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: white;
+}
+
+.activity-date {
+  font-size: 12px;
+  color: white;
+}
+
 </style>

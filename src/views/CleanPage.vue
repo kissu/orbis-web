@@ -8,12 +8,14 @@
     <div v-if="loading" class="loading">
       <lottie :options="defaultOptions" :width="200" :height="200" />
     </div>
-    <ul v-if="!loading" class="activity-list">
-      <li v-for="activity in filteredActivities" :key="activity.id" @click="goToActivityDetails(activity.id)">
-        <div class="activity-item">
-          <img :src="activity.image" alt="Activity Image" class="activity-image" />
-          <div class="activity-details">
-            <div class="activity-name">{{ activity.name }}</div>
+    <ul v-if="!loading" class="clean-list">
+      <li v-for="clean in this.clean" :key="clean.id" @click="goTocleanDetails(clean.id)">
+        <div class="clean-item">
+          <div v-if="clean.images.blob" class="clean-image-container">
+            <img :src="`data:image/jpeg;base64,${clean.images.blob}`" alt="Clean Image" class="clean-image" />
+          </div>
+          <div class="clean-details">
+            <div class="clean-name">{{ clean.name }}</div>
           </div>
         </div>
       </li>
@@ -22,7 +24,7 @@
 </div>
 </template>
   
-  <script>
+<script>
   
 import { mapGetters } from 'vuex';
 import { defineComponent } from 'vue';
@@ -40,24 +42,21 @@ export default defineComponent({
       defaultOptions: {
         animationData: animationData,
       },
-      activities: [],
+      clean: [],
       loading: true,
       appIconPath: '/src/images/ic_add.png',
     };
     },
     computed: {
-      filteredActivities() {
-        return this.activities.filter(activity => activity.categoriesId === 26);
-      },
       ...mapGetters(['getUser']),
     },
     mounted() {
-      this.fetchActivities();
+      this.fetchclean();
     },
     methods: {
-      async fetchActivities() {
+      async fetchclean() {
         try {
-          const response = await fetch('/api/v1/Activities/all');
+          const response = await fetch('/api/v1/Clean/all');
   
           if (!response.ok) {
             throw new Error(`Network response was not ok, status: ${response.status}`);
@@ -73,21 +72,29 @@ export default defineComponent({
 
           const data = await response.json();
           
-          this.activities = data.filter(activity => {
-            return !blockedUserIds.includes(activity.UserId) && activity.Available !== false;
+          this.clean = data.filter(clean => {
+            return !blockedUserIds.includes(clean.UserId) && clean.Available !== false;
           });
         } catch (error) {
-          console.error('Error fetching activities:', error);
+          console.error('Error fetching clean:', error);
         } finally {
           this.loading = false;
         }
       },
-      goToActivityDetails(id) {
+      goTocleanDetails(id) {
         this.$router.push({ name: 'cleandetails', params: { id } });
       },
       addClicked() {
       this.$router.push('/newclean'); 
       },
+      async getImageUrl(id) {
+      try {             
+        const response = axios.get(`/api/v1/Images/GetImageBlobById/${id}`);
+        this.imageUrl = `data:image/jpeg;base64,${response.data}`;
+      } catch (error) {
+        console.error('Error fetching image:', error);
+      }
+    },
     },
   });
   </script>
@@ -114,8 +121,8 @@ export default defineComponent({
   }
   
   .add-icon {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
   }
   
   .loading {
@@ -123,35 +130,35 @@ export default defineComponent({
     margin-top: 20px;
   }
   
-  .activity-list {
+  .clean-list {
     list-style: none;
     padding: 0;
   }
   
-  .activity-item {
+  .clean-item {
     display: flex;
     align-items: center;
     padding: 10px;
     border-bottom: 1px solid #ddd;
   }
   
-  .activity-image {
-    width: 70px;
-    height: 70px;
+  .clean-image {
+    width: 150px;
+    height: 100px;
     margin-right: 10px;
   }
   
-  .activity-details {
+  .clean-details {
     flex-grow: 1;
   }
   
-  .activity-name {
+  .clean-name {
     font-size: 16px;
     font-weight: bold;
     color: white;
   }
   
-  .activity-date {
+  .clean-date {
     font-size: 12px;
     color: white;
   }

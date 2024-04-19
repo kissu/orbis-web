@@ -13,11 +13,6 @@
 
     <audio ref="audioPlayer" :src="audioFilePath" preload="auto"></audio>
 
-    <div class="switch-container">
-      <label>{{ switchStatusLabel }}</label>
-      <input type="checkbox" v-model="isSwitchOn" @change="onSwitchToggled" />
-    </div>
-
     <button @click="configureSOS" class="sos-button">Add SOS Number</button>
 
     <ul>
@@ -54,8 +49,6 @@ export default defineComponent({
       defaultOptions: {
         animationData: animationData,
       },
-      switchStatusLabel: 'SOS is Off',
-      mySwitch: false,
       isLoading: false,
       SOSNumbersList: [],
       sosActivate: false,
@@ -67,36 +60,6 @@ export default defineComponent({
     };
   },
   methods: {
-    async initializeSwitchToggled() {
-      const initialize = await Storage.get({ key: 'SOS_Switch_State' });
-      this.$refs.switchStatusLabel.text = initialize ? 'SOS is On' : 'SOS is Off';
-      this.mySwitch = initialize;
-    },
-    onSwitchToggled(e) {
-      const isSwitchOn = e.value;
-      Storage.set({ key: 'SOS_Switch_State', value: isSwitchOn.toString() });
-    },
-    async removeNumberClicked(numberToRemove) {
-      const userId = parseInt(await Storage.get({ key: 'UserId' }), 10);
-    },
-    async displayNumbers() {
-      this.isLoading = true;
-      //const userId = parseInt(await Storage.get({ key: 'UserId' }), 171);
-      const userId = 171;
-      try {
-        const response = await fetch(`/api/v1/Users/GetUserSOSNumbers/${userId}`);
-        if (!response.ok) {
-          throw new Error(`Network response was not ok, status: ${response.status}`);
-        }
-        console.log('Lottie Options:', this.defaultOptions);
-        const data = await response.json();
-        this.SOSNumbersList = data;
-      } catch (error) {
-        console.error('Error fetching activities:', error);
-      } finally {
-        this.loading = false;
-      }
-    },
     async sosClicked() {
       this.sosActivate = !this.sosActivate;
 
@@ -117,37 +80,6 @@ export default defineComponent({
         }
         await this.sendTwilioMessagesToNearbyUsers();
     },
-    async configureSOS() {
-    let userCancelled = false;
-
-    while (true) {
-      const input = prompt("Add a number for SOS");
-
-      if (input === null || input === "") {
-        userCancelled = true;
-        break;
-      }
-
-      if (!input.startsWith("+")) {
-        alert("You must put the correct format (with +)");
-      }
-
-      const number = parseInt(input, 10);
-
-      if (!isNaN(number)) {
-        if (this.SOSNumbersList.length > 0) {
-          this.SOSNumbersList.push(number);
-        } else {
-          this.SOSNumbersList = [number];
-        }
-      }
-    }
-
-    if (this.SOSNumbersList.length > 0) {
-      const numbersString = this.SOSNumbersList.join(", ");
-      await this.updateSOSNumber(numbersString);
-    }
-  },
   async sendTwilioMessagesToNearbyUsers() {
   const TWILIO_ACCOUNT_SID = 'ACe31235f13fd304e2ecba1c22cf12cd80';
   const TWILIO_AUTH_TOKEN = '706a837c91b616f2325d1e7306b7250a';

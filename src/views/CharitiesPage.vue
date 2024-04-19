@@ -8,12 +8,14 @@
     <div v-if="loading" class="loading">
       <lottie :options="defaultOptions" :width="200" :height="200" />
     </div>
-    <ul v-if="!loading" class="activity-list">
-      <li v-for="activity in filteredActivities" :key="activity.id" @click="goToActivityDetails(activity.id)">
-        <div class="activity-item">
-          <img :src="activity.image" alt="Activity Image" class="activity-image" />
-          <div class="activity-details">
-            <div class="activity-name">{{ activity.name }}</div>
+    <ul v-if="!loading" class="charities-list">
+      <li v-for="charities in this.charities" :key="charities.id" @click="goTocharitiesDetails(charities.id)">
+        <div class="charities-item">
+          <div v-if="charities.images.blob" class="charities-image-container">
+            <img :src="`data:image/jpeg;base64,${charities.images.blob}`" alt="charities Image" class="charities-image" />
+          </div>
+          <div class="charities-details">
+            <div class="charities-name">{{ charities.name }}</div>
           </div>
         </div>
       </li>
@@ -22,7 +24,7 @@
 </div>
 </template>
   
-  <script>
+<script>
 import { mapGetters } from 'vuex';
 import { defineComponent } from 'vue';
 import Lottie from 'vue-lottie/src/lottie.vue';
@@ -40,27 +42,21 @@ export default defineComponent({
       defaultOptions: {
         animationData: animationData,
       },
-        activities: [],
+        charities: [],
         loading: true,
         appIconPath: '/src/images/ic_add.png',
       };
     },
     computed: {
-      filteredActivities() {
-        return this.activities.filter(activity => activity.categoriesId === 20);
-      },
       ...mapGetters(['getUser']),
     },
     mounted() {
-      this.fetchActivities();
-    },
-    addClicked() {
-      this.$router.push('/newdonation'); 
+      this.fetchcharities();
     },
     methods: {
-      async fetchActivities() {
+      async fetchcharities() {
         try {
-          const response = await fetch('/api/v1/Activities/all');
+          const response = await fetch('/api/v1/charities/all');
   
           if (!response.ok) {
             throw new Error(`Network response was not ok, status: ${response.status}`);
@@ -76,18 +72,29 @@ export default defineComponent({
 
           const data = await response.json();
           
-          this.activities = data.filter(activity => {
-            return !blockedUserIds.includes(activity.UserId) && activity.Available !== false;
+          this.charities = data.filter(charities => {
+            return !blockedUserIds.includes(charities.UserId) && charities.Available !== false;
           });
         } catch (error) {
-          console.error('Error fetching activities:', error);
+          console.error('Error fetching charities:', error);
         } finally {
           this.loading = false;
         }
       },
-      goToActivityDetails(id) {
+      goTocharitiesDetails(id) {
         this.$router.push({ name: 'donationdetails', params: { id } });
       },
+      addClicked() {
+      this.$router.push('/newdonation'); 
+      },
+      async getImageUrl(id) {
+      try {             
+        const response = axios.get(`/api/v1/Images/GetImageBlobById/${id}`);
+        this.imageUrl = `data:image/jpeg;base64,${response.data}`;
+      } catch (error) {
+        console.error('Error fetching image:', error);
+      }
+    },
     },
   });
   </script>
@@ -114,8 +121,8 @@ export default defineComponent({
   }
   
   .add-icon {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
   }
   
   .loading {
@@ -123,35 +130,35 @@ export default defineComponent({
     margin-top: 20px;
   }
   
-  .activity-list {
+  .charities-list {
     list-style: none;
     padding: 0;
   }
   
-  .activity-item {
+  .charities-item {
     display: flex;
     align-items: center;
     padding: 10px;
     border-bottom: 1px solid #ddd;
   }
   
-  .activity-image {
-    width: 70px;
-    height: 70px;
+  .charities-image {
+    width: 150px;
+    height: 100px;
     margin-right: 10px;
   }
   
-  .activity-details {
+  .charities-details {
     flex-grow: 1;
   }
   
-  .activity-name {
+  .charities-name {
   font-size: 16px;
   font-weight: bold;
   color: white;
   }
   
-  .activity-date {
+  .charities-date {
     font-size: 12px;
     color: #404040;
   }

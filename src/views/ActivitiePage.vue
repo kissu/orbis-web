@@ -21,7 +21,8 @@
       <div class="col-lg-4 d-flex">
         <search-bar @search="filterByLocation($event)" class="search-bar" />
       </div>
-      <div class="col-lg-1"><img :src="appIconPath" alt="Add Icon" class="add-icon m-0" @click="addClicked" />   </div>
+      <div class="col-lg-1"><img :src="appIconPath" alt="Add Icon" class="add-icon m-0" @click="addClicked"/>   
+      </div>
     </div>
     <div v-if="loading" class="loading">
       <lottie :options="defaultOptions" :width="200" :height="200" />
@@ -29,12 +30,12 @@
     <ul v-if="!loading" class="activity-list">
       <li v-for="activity in filteredActivities" :key="activity.id" @click="goToActivityDetails(activity.id)">
         <div class="activity-item">
+          <div v-if="activity.images.blob" class="activity-image-container">
+            <img :src="`data:image/jpeg;base64,${activity.images.blob}`" alt="Activity Image" class="activity-image" />
+          </div>
           <div class="activity-details">
             <div class="activity-name">{{ activity.name }}</div>
             <div class="activity-date">{{ formatDate(activity.start_date) }}</div>
-          </div>
-          <div v-if="activity.images.blob" class="activity-image-container">
-            <img :src="`data:image/jpeg;base64,${activity.images.blob}`" alt="Activity Image" class="activity-image" />
           </div>
         </div>
       </li>
@@ -79,12 +80,10 @@ export default defineComponent({
   },
   computed: {
     filteredActivities() {
-      let filteredByCategory = this.activities.filter(activity => activity.categoriesId !== 20 && activity.categoriesId !== 26);
-
       if (this.selectedTimeInterval === '') {
-        return filteredByCategory; 
+        return this.activities; 
       } else {
-        return filteredByCategory.filter(activity => this.isActivityInSelectedTimeInterval(activity));
+        return this.activities.filter(activity => this.isActivityInSelectedTimeInterval(activity));
       }
     },
     ...mapGetters(['getUser']),
@@ -131,7 +130,7 @@ export default defineComponent({
         this.filteredActivities = this.activities.filter(activity => this.isActivityInSelectedTimeInterval(activity));
         break;
       default:
-        this.filteredActivities = this.activities.filter(activity => activity.categoriesId !== 20 && activity.categoriesId !== 26);
+        this.filteredActivities = this.activities;
         break;
     }
   },
@@ -152,7 +151,7 @@ export default defineComponent({
   } catch (error) {
     console.error('Error fetching image:', error);
   }
-},
+  },
     addClicked() {
       this.$router.push('/newactivitie'); 
     },
@@ -212,8 +211,8 @@ export default defineComponent({
 }
 
 .add-icon {
-  width: 35px;
-  height: 35px;
+  width: 40px;
+  height: 40px;
 }
 
 .loading {
@@ -234,8 +233,8 @@ export default defineComponent({
 }
 
 .activity-image {
-  width: 70px;
-  height: 70px;
+  width: 150px;
+  height: 100px;
   margin-right: 10px;
 }
 

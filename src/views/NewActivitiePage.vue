@@ -41,7 +41,7 @@
               <label>
                 Max participants: <span className="text-danger">*</span>
               </label>
-              <input type="number" id="maxParticipants" v-model="newActivity.maxParticipants" class="input"
+              <input type="number" id="maxParticipants" v-model="newActivity.MaxJoin" class="input"
                 placeholder="Enter max participants" required />
             </div>
           </div>
@@ -70,7 +70,6 @@
 
         <div className="row text-start">
           <label className="col-form-label col-md-12">
-            Important input for related meeting
           </label>
           <div className="col-md-12">
             <textarea id="description" v-model="newActivity.description" class="input" placeholder="Enter description"
@@ -83,9 +82,6 @@
             {{ suggestion }}
           </li>
         </ul>
-
-
-
 
         <label for="image" class="image-upload">
           <img v-if="newActivity.selectedImage" :src="newActivity.selectedImageURL" alt="Selected Image"
@@ -121,6 +117,7 @@ export default {
         endDate: "",
         selectedImage: null,
         selectedImageURL: null,
+        categoriesId: null,
       },
       categories: [],
     };
@@ -133,7 +130,7 @@ export default {
       try {
         const data = {
           "id": 0,
-          "category_id": this.newActivity.categoryId,
+          "category_id": 2,
           "blob": this.newActivity.selectedImageURL.split(',')[1]
         }
         const response = await axios.post('/api/v1/Images', data);
@@ -144,7 +141,6 @@ export default {
         throw error;
       }
     },
-
     handleImageChange(event) {
       const file = event.target.files[0];
 
@@ -173,9 +169,7 @@ export default {
         const imageId = await this.uploadImage();
 
         this.newActivity.image_id = imageId;
-
-        console.log("imageId",imageId)
-        console.log("this.newActivity",this.newActivity);
+        this.newActivity.categoriesId = this.newActivity.categoryId;
 
         const response = await fetch('/api/v1/Activities', {
           method: 'POST',
@@ -191,7 +185,8 @@ export default {
         }
 
         const data = await response.json();
-        alert("published successfully")
+        alert("published successfully");
+        this.$router.go(-1);
       } catch (error) {
         console.error('Error publishing activity:', error);
       }
@@ -249,11 +244,12 @@ export default {
   color: white;
   padding: 10px;
   border: none;
-  border-radius: 15px;
+  border-radius: 20px;
   cursor: pointer;
   text-align: center;
   margin: auto;
   width: 300px;
   height: 45px;
+  margin-top: 15px;
 }
 </style>

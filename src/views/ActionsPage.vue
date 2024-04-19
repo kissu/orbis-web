@@ -1,19 +1,15 @@
 <template>
   <div class="settings-page">
-    <!-- Navigation buttons -->
     <div class="navigation-buttons">
-      <button class="setting-button" @click="publishedClicked">Published</button>
-      <button class="setting-button" @click="joinedClicked">Joined</button>
-      <button class="setting-button" @click="likedClicked">Liked</button>
-    </div>
+      <button class="setting-button" @click="joinedClicked">Activities Joined</button>
+      <button class="setting-button" @click="activitiespublishedClicked">Activities Published</button>
+      <button class="setting-button" @click="activitieslikedClicked">Activities Liked</button>
 
-    <!-- Manage buttons -->
-    <div class="manage-buttons">
-      <img src="/src/images/join.png" @click="manageClicked" class="manage-button" alt="Join" />
-      <img src="/src/images/donation.png" @click="manageClicked" class="manage-button" alt="Donation" />
-      <img src="/src/images/audio.png" @click="manageClicked" class="manage-button" alt="Audio" />
-      <img src="/src/images/ic_edit.png" @click="manageClicked" class="manage-button" alt="Edit" />
-      <img src="/src/images/like.png" @click="manageClicked" class="manage-button" alt="Like" />
+      <button class="setting-button" @click="cleanpublishedClicked">Clean Published</button>
+      <button class="setting-button" @click="cleanlikedClicked">Clean Liked</button>
+
+      <button class="setting-button" @click="charitiespublishedClicked">Charities Published</button>
+      <button class="setting-button" @click="charitieslikedClicked">Charities Liked</button>
     </div>
   </div>
 </template>
@@ -21,18 +17,27 @@
 <script>
 export default {
   methods: {
-    publishedClicked() {
-      this.$router.push('/published');
+    acitivitiesjoinedClicked() {
+      this.$router.push('/acitivitiesjoined');
     },
-    joinedClicked() {
-      this.$router.push('/joined');
+    activitiespublishedClicked() {
+      this.$router.push('/activitiespublished');
     },
-    likedClicked() {
-      this.$router.push('/liked');
+    activitieslikedClicked() {
+      this.$router.push('/activitiesliked');
     },
-    manageClicked() {
-      // Handle manage button click
-    }
+    cleanpublishedClicked() {
+      this.$router.push('/cleanpublished');
+    },
+    cleanlikedClicked() {
+      this.$router.push('/cleanliked');
+    },
+    charitiespublishedClicked() {
+      this.$router.push('/charitiespublished');
+    },
+    charitieslikedClicked() {
+      this.$router.push('/charitiesliked');
+    },
   },
 };
 </script>
@@ -52,6 +57,7 @@ export default {
   flex-wrap: wrap;
   justify-content: center;
   margin-bottom: 20px;
+  flex-direction: column;
 }
 
 .manage-buttons {

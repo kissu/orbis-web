@@ -3,11 +3,18 @@
       <div v-if="loading" class="loading">
         <lottie :options="defaultOptions" :width="200" :height="200" />
       </div>
-      <ul v-if="!loading" class="activity-list">
-        <li v-for="activity in activitiesWithCleanImagesId" :key="activity.id">
-          {{ activity.name }}
-          <button @click="cleanActivity(activity.id)">Clean</button>
-        </li>
+      <ul v-if="!loading" class="clean-list">
+        <li v-for="clean in cleanWithCleanImagesId" :key="clean.id">
+          <div v-if="clean.images.blob || clean.cleanImagesId" class="clean-image-container">
+    <img v-if="clean.images.blob" :src="`data:image/jpeg;base64,${clean.images.blob}`" alt="clean Image" class="clean-image" />
+    <img :src="getImageUrl(clean.cleanImagesId)" alt="clean Image with cleanImagesId" class="invisible" />
+    <img v-if="imageUrls[clean.cleanImagesId]" :src="imageUrls[clean.cleanImagesId]" alt="clean Image with cleanImagesId" class="clean-image" />
+  </div>
+
+  {{ clean.name }}
+  <button @click="Clean(clean.id)">Clean</button>
+</li>
+
       </ul>
     </div>
   </template>
@@ -16,6 +23,7 @@
     import Lottie from 'vue-lottie/src/lottie.vue';
     import animationData from "@/assets/animations/loading.json";
     import { defineComponent } from 'vue';
+    import axios from 'axios';
 
     export default defineComponent({
     components: {
@@ -26,49 +34,80 @@
         defaultOptions: {
             animationData: animationData,
         },
-        activities: [],
-        activitiesWithCleanImagesId: [],
+        clean: [],
+        cleanWithCleanImagesId: [],
         loading: true,
+        imageUrls: {}, 
         };
     },
     mounted() {
-        this.getActivities();
+        this.getclean();
     },
     methods: {
-        async getActivities() {
+      removeCleanFromList(id) {
+      this.cleanWithCleanImagesId = this.cleanWithCleanImagesId.filter(clean => clean.id !== id);
+    },
+        async getclean() {
         try {
-            const response = await fetch('/api/v1/Activities/all');
+            const response = await fetch('/api/v1/Clean/all');
             const data = await response.json();
-            this.activities = data;
-            this.filterActivitiesWithCleanImagesId();
+            this.clean = data;
+            this.filtercleanWithCleanImagesId();
         } catch (error) {
-            console.error('Error recovering activities:', error);
+            console.error('Error recovering clean:', error);
         } finally {
             this.loading = false;
         }
         },
-        filterActivitiesWithCleanImagesId() {
-    this.activitiesWithCleanImagesId = this.activities.filter(activity => 
-        activity.cleanImagesId !== null && 
-        activity.cleanImagesId.length > 0 && 
-        activity.cleanImagesId[0] !== 0 
+        filtercleanWithCleanImagesId() {
+    this.cleanWithCleanImagesId = this.clean.filter(clean => 
+        clean.cleanImagesId !== null && 
+        clean.cleanImagesId.length > 0 && 
+        clean.cleanImagesId[0] !== 0 
     );
     },
-      async cleanActivity(id) {
+    async getImageUrl(id) {
+  try {             
+    const response = await axios.get(`/api/v1/Images/GetImageBlobById/${id}`);
+    if (response.status === 200) {
+      this.imageUrls[id] = `data:image/jpeg;base64,${response.data}`;
+    } else {
+      console.error('Failed to fetch image:', response.statusText);
+    }
+  } catch (error) {
+    console.error('Error fetching image:', error);
+  }
+},
+      async Clean(id) {
       try {
-          const response = await fetch(`/api/v1/Activities/CleanedValidate/${id}`, {
+          const response = await fetch(`/api/v1/Clean/CleanedValidate/${id}`, {
           method: 'PUT',
           });
           if (response.ok) {
-            this.getActivities();
-          console.log('Activity cleaned up successfully');
+            this.getclean();
+            this.removeCleanFromList(id);
+          console.log('clean cleaned up successfully');
             } else {
-            console.error('Error cleaning up activity:', response.statusText);
+            console.error('Error cleaning up clean:', response.statusText);
             }
         } catch (error) {
-            console.error('Error cleaning up activity:', error);
+            console.error('Error cleaning up clean:', error);
       }
       }
     }
     });
     </script>
+
+<style>
+
+.clean-image {
+  width: 250px;
+  height: 250px;
+  margin-right: 50px;
+}
+
+.invisible {
+  display: none;
+}
+
+</style>

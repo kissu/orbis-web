@@ -3,7 +3,7 @@
     <lottie :options="defaultOptions" :width="200" :height="200" />
     <input v-model="email" placeholder="Email" class="input-field" required/>
     <input v-model="password" placeholder="Password" type="password" class="input-field" required/>
-    <button @click="login">Login</button>
+    <button class="button" @click="login">Login</button>
 
     <label @click="forgotPassword" class="forget-label">
       Forget password?
@@ -115,7 +115,7 @@ export default defineComponent({
 
   .input-field {
     width: 300px;
-    height: 100px;
+    height: 50px;
     margin: 5px 0; 
     padding: 5px;
     border: 1px solid #404040;
@@ -145,7 +145,7 @@ export default defineComponent({
 
   button {
     width: 270px;
-    height: 85px;
+    height: 45px;
     margin: 10px;
     padding: 5px;
     border: none;
