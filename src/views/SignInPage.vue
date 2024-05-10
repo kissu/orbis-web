@@ -1,24 +1,25 @@
 <template>
   <div>
     <label for="image" class="image-upload">
-    <img v-if="selectedImage" :src="selectedImageURL" alt="Selected Image" class="upload-icon" style="max-width: 150px; max-height: 150px;" />
-    <span v-else>
-      <img src="/src/images/camera.png" alt="Upload Image" class="upload-icon" />
-    </span>
-  </label>
-  <input type="file" id="image" @change="handleImageChange" accept="image/*" class="input" style="display: none;" />
+      <img v-if="selectedImage" :src="selectedImageURL" alt="Selected Image" class="upload-icon" style="max-width: 150px; max-height: 150px;" />
+      <span v-else>
+        <img src="/src/images/camera.png" alt="Upload Image" class="upload-icon" />
+      </span>
+    </label>
+    <input type="file" id="image" @change="handleImageChange" accept="image/*" class="input" style="display: none;" />
 
     <input v-model="email" placeholder="Email" class="input-field" required/>
     <input v-model="name" placeholder="Name" class="input-field" required/>
     <input v-model="password" placeholder="Password" type="password" class="input-field" required/>
     <input v-model="confirmPassword" placeholder="Confirm password" type="password" class="input-field" required/>
-    <input v-model="verificationCode" placeholder="Verification Code" class="input-field" v-if="showVerificationCodeInput" required/>
+    <input v-model="enterCode" placeholder="Verification Code" class="input-field" v-if="showEnterCodeInput" required/>
     <button @click="register">Register</button>
   </div>
 </template>
 
 <script>
 import { sha512 } from 'js-sha512'; 
+import axios from 'axios';
 
 export default {
   data() {
@@ -28,7 +29,8 @@ export default {
       password: '',
       confirmPassword: '',
       verificationCode: '',
-      showVerificationCodeInput: false,
+      enterCode: '',
+      showEnterCodeInput: false,
       verificationEmailSent: false,
       selectedImage: null,
       selectedImageURL: null,
@@ -36,29 +38,20 @@ export default {
   },
   methods: {
     async uploadImage() {
-    try {
-        const formData = new FormData();
-        formData.append('image', this.selectedImage);
-
-        const response = await fetch('/api/v1/Images', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json', 'charset': 'utf-8'},
-            body: formData,
-        });
-
-        if (!response.ok) {
-          console.error('JJJJJJJJJJJJJJJJJJJJJJJJ:', response);
-            throw new Error(`Image upload failed, status: ${response.status}`);
+      try {
+        const data = {
+          "id": 0,
+          "category_id": 2,
+          "blob": this.selectedImageURL.split(',')[1]
         }
-
-        const data = await response.json();
-        return data.imageId; 
-    } catch (error) {
+        const response = await axios.post('/api/v1/Images', data);
+        console.log("response",response)
+        return response.data.id;
+      } catch (error) {
         console.error('Error uploading image:', error);
-        throw error; 
-    }
-},
-
+        throw error;
+      }
+    },
     handleImageChange(event) {
       const file = event.target.files[0];
 
@@ -70,57 +63,115 @@ export default {
       };
       reader.readAsDataURL(file);
     },
+    async validateVerificationCode() {
+      try {
+        const apiUrl = '/api/v1/Users/ValidateVerificationCode'; 
 
-    async register() {
-  try {
-    if (this.password !== this.confirmPassword) {
-      alert("Password and confirm password do not match");
-      return;
-    }
+        const response = await axios.post(apiUrl, {
+          enteredCode: this.enterCode,
+          verificationCode: this.verificationCode
+        });
 
-    //const imageId = await this.uploadImage();
-    const imageId = 9;
-    const identityId = this.generateGuid();
-    const salt = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    const passwordSalted = this.password + salt;
-    const passwordHash = sha512(passwordSalted);
-
-    const apiUrl = '/api/v1/Users/AuthenticateWithEmailPasswordWeb';
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        Email: this.email, 
-        Name: this.name,
-        Modified_by: this.password,
-        PasswordHash: passwordHash, 
-        PasswordSalt : salt, 
-        IdentityId: identityId,
-        Image_id: imageId,
-      })
-    });
-
-    if (response.ok) {
-      const responseData = await response.json();
-      if (responseData.requiresVerification) {
-        this.showVerificationCodeInput = true;
-        return;
+        if (response.status === 200) {
+          return response.data; 
+        } else {
+          console.error('Failed to validate verification code:', response.statusText);
+          return false;
+        }
+      } catch (error) {
+        console.error('Error validating verification code:', error);
+        return false;
       }
-      alert("Registration successful!");
-      this.$router.push('/logout'); 
-    } else {
-      const errorData = await response.json();
-      console.error('API Error:', errorData);
-      alert("Registration failed: " + errorData.message);
-    }
-  } catch (error) {
-    console.error('Fetch Error:', error);
-    alert("Registration failed: " + error.message);
-  }
-},
-generateGuid() {
+    },
+    async sendVerificationEmail() {
+      try {
+        this.verificationCode = this.generateVerificationCode() 
+        const apiUrl = '/api/v1/Users/SendVerificationCodeEmail'; 
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            recipientEmail: this.email,
+            userName: this.name,
+            body: this.verificationCode
+          })
+        });
+        if (response.ok) {
+          alert('Verification email sent successfully');
+        } else {
+          const errorData = await response.json();
+          console.error('Error sending verification email:', errorData);
+          alert('Error sending verification email');
+        }
+      } catch (error) {
+        console.error('Error sending verification email request:', error);
+        alert('Error sending verification email request');
+      }
+    },
+    generateVerificationCode() {
+      return Math.random().toString(36).substring(2, 8);
+    },
+    async register() {
+      try {
+        if (this.password !== this.confirmPassword) {
+          alert("Password and confirm password do not match");
+          return;
+        }
+
+        if (this.showEnterCodeInput) {
+          const isCodeValid = await this.validateVerificationCode();
+          if (!isCodeValid) {
+            alert("Verification code is not valid or has expired.");
+            return;
+          }
+        }
+
+        if (!this.verificationEmailSent) {
+          await this.sendVerificationEmail();
+          this.verificationEmailSent = true;
+          this.showEnterCodeInput = true; 
+          return;
+        }
+
+        const imageId = await this.uploadImage();
+        const identityId = this.generateGuid();
+        const salt = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+        const passwordSalted = this.password + salt;
+        const passwordHash = sha512(passwordSalted);
+
+        const apiUrl = '/api/v1/Users/AuthenticateWithEmailPasswordWeb';
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            Email: this.email, 
+            Name: this.name,
+            Modified_by: this.password,
+            PasswordHash: passwordHash, 
+            PasswordSalt : salt, 
+            IdentityId: identityId,
+            Image_id: imageId,
+          })
+        });
+
+        if (response.ok) {
+          alert("Registration successful!");
+          this.$router.push('/logout'); 
+        } else {
+          const errorData = await response.json();
+          console.error('API Error:', errorData);
+          alert("Registration failed: " + errorData.message);
+        }
+      } catch (error) {
+        console.error('Fetch Error:', error);
+        alert("Registration failed: " + error.message);
+      }
+    },
+    generateGuid() {
       return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         const r = Math.random() * 16 | 0,
           v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -160,8 +211,6 @@ generateGuid() {
     justify-content: center;
     height: 100vh;
   }
-
-  
 
   input {
     width: 300px;

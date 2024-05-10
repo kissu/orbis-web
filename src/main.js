@@ -18,6 +18,8 @@ import ActivitiesPublishedPage from './views/ActivitiesPublishedPage.vue'
 import CleanPublishedPage from './views/CleanPublishedPage.vue'
 import CharitiesPublishedPage from './views/CharitiesPublishedPage.vue'
 import UpdateActivitiePage from './views/UpdateActivitiePage.vue'
+import UpdateCleanPage from './views/UpdateCleanPage.vue'
+import UpdateCharitiePage from './views/UpdateCharitiePage.vue'
 import AboutPage from './views/AboutPage.vue'
 import SignInPage from './views/SignInPage.vue'
 import ApplyPage from '@/views/ApplyPage.vue';
@@ -32,6 +34,7 @@ import ActionsPage from '@/views/ActionsPage.vue';
 import CharitiesPage from '@/views/CharitiesPage.vue';
 import CleanPage from '@/views/CleanPage.vue';
 import GonePage from '@/views/GonePage.vue';
+import BlockedPage from '@/views/BlockedPage.vue';
 import NewCleanPage from '@/views/NewCleanPage.vue';
 import Lottie from 'vue-lottie';
 import MessagesPage from './views/MessagesPage.vue'
@@ -79,11 +82,14 @@ const router = createRouter({
     { path: '/activitiespublished', component: ActivitiesPublishedPage, meta: { requiresAuth: true } }, 
     { path: '/cleanpublished', component: CleanPublishedPage, meta: { requiresAuth: true } }, 
     { path: '/charitiespublished', component: CharitiesPublishedPage, meta: { requiresAuth: true } }, 
-    { path: '/update', component: UpdateActivitiePage, meta: { requiresAuth: true } }, 
+    { path: '/updateactivitie/:id', name: 'updateactivitie', component: UpdateActivitiePage, meta: { requiresAuth: true } }, 
+    { path: '/updateclean/:id', name: 'updateclean', component: UpdateCleanPage, meta: { requiresAuth: true } }, 
+    { path: '/updatecharitie/:id', name: 'updatecharitie', component: UpdateCharitiePage, meta: { requiresAuth: true } }, 
     { path: '/about', component: AboutPage }, 
     { path: '/signin', component: SignInPage }, 
     { path: '/actions', component: ActionsPage }, 
     { path: '/apply', component: ApplyPage, meta: { requiresAuth: true } }, 
+    { path: '/blocked', component: BlockedPage, meta: { requiresAuth: true } }, 
     { path: '/blind', component: BlindPage }, 
     { path: '/categories', component: CategoriesPage }, 
     { path: '/contact', component: ContactPage }, 
@@ -93,7 +99,7 @@ const router = createRouter({
     { path: '/sos', component: SOSPage, meta: { requiresAuth: true } }, 
     { path: '/talk', component: TalkPage }, 
     { path: '/charities', component: CharitiesPage }, 
-    { path: '/gone', component: GonePage }, 
+    { path: '/gone', component: GonePage, meta: { requiresAuth: true } }, 
     { path: '/clean', component: CleanPage }, 
     { path: '/messages', component: MessagesPage }, 
     { path: '/groupmessage/:id', name: 'groupmessage', component: GroupMessagePage }, 

@@ -1,8 +1,14 @@
 <template>
   <div class="main-container"> 
-    <div class="activity-name">
-      <h2>{{ activity.name }}</h2>
-      <p>{{ activity.description }}</p>
+    <div class="clean-name">
+      <img :src="this.imageUrl" alt="clean Image" class="clean-image" />
+      <h2>{{ clean.name }}</h2>
+      <p>{{ clean.description }}</p>
+    </div>
+
+    <div class="profile">
+      <img :src="imageProfileUrl" alt="Image de profil" class="profile-image" />
+      <h2>{{ username }}</h2>
     </div>
 
     <div class="image-container">
@@ -17,8 +23,8 @@
     <button class="submit-button" @click="sendCleaned">Send</button>
 
     <div>
-      <img v-if="likeItemsVisible" src="/src/images/noliked.png" @click="likeActivity" height="50px" width="50px">
-      <img v-if="cancelLikeItemsVisible" src="/src/images/like.png" @click="cancelLikeActivity" height="50px" width="50px">
+      <img v-if="likeItemsVisible" src="/src/images/noliked.png" @click="likeclean" height="50px" width="50px">
+      <img v-if="cancelLikeItemsVisible" src="/src/images/like.png" @click="cancelLikeclean" height="50px" width="50px">
     </div>
 
     <div>
@@ -39,35 +45,39 @@
   
   <script>
   import { mapGetters } from 'vuex';
+  import axios from 'axios';
 
   export default {
     props: ['id'],
     data() {
       return {
-        activity: {},
+        clean: {},
         selectedFile: null,
         selectedImage: null,
         selectedImageURL: null,
-        predefinedReasons: ["I just don't like it", "It's Spam", "Nudity or sexual activity", "False Information", "Scam or Fraud", "Bullying or harassment", "Something else"],
+        predefinedReasons: ["I just don't like it", "It's Spam", "Nudity or sexual clean", "False Information", "Scam or Fraud", "Bullying or harassment", "Something else"],
         showReportForm: false,
         selectedReason: null,
         likeItemsVisible: true,
         cancelLikeItemsVisible: false,
+        imageUrl: '', 
+        imageProfileUrl: '',
+        username: ''
       };
     },
     mounted() {
       const id = this.$route.params.id;
-      this.fetchActivityDetails(id);
+      this.fetchcleanDetails(id);
       this.checkLiked();
     },
     computed: {
     ...mapGetters(['getUser']),
   },
     methods: {
-      async likeActivity() {
+      async likeclean() {
     try {
       const userId = this.getUser.userId;
-      const response = await fetch(`/api/v1/Users/LikeClean/${this.activity.id}/${userId}`, {
+      const response = await fetch(`/api/v1/Users/LikeClean/${this.clean.id}/${userId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${this.oauthToken}`
@@ -83,10 +93,10 @@
       console.error('Erreur lors de la tentative de like de l\'activité:', error);
     }
   },
-  async cancelLikeActivity() {
+  async cancelLikeclean() {
       try {
         const userId = this.getUser.userId;
-        const response = await fetch(`/api/v1/Users/CancelLiked/${this.activity.id}/${userId}`, {
+        const response = await fetch(`/api/v1/Users/CancelLiked/${this.clean.id}/${userId}`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${this.oauthToken}`
@@ -108,7 +118,7 @@
     async submitReport() {
       try {
         if (this.selectedReason) {
-          const requestUri = `/api/v1/Users/ReportUser/${this.activity.userId}`;
+          const requestUri = `/api/v1/Users/ReportUser/${this.clean.userId}`;
           const response = await fetch(requestUri, {
             method: 'PUT',
             headers: {
@@ -133,9 +143,9 @@
         const responseLiked = await fetch(`/api/v1/Users/LikedByUsers/${userId}`);
 
         if (responseLiked.ok) {
-            const likedActivities = await responseLiked.json();
+            const likedclean = await responseLiked.json();
 
-            if (likedActivities.includes(this.activity.id)) {
+            if (likedclean.includes(this.clean.id)) {
                 this.likeItemsVisible = false;
                 this.cancelLikeItemsVisible = true;
             } else {
@@ -148,29 +158,22 @@
     } catch (error) {
         console.error('Erreur lors de la vérification des activités aimées et rejointes par l\'utilisateur:', error);
     }
-},
-      async uploadImage() {
-    try {
-        const formData = new FormData();
-        formData.append('image', this.selectedImage);
-
-        const response = await fetch('/api/v1/Images', {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json', 'charset': 'utf-8'},
-            body: formData,
-        });
-
-        if (!response.ok) {
-            throw new Error(`Image upload failed, status: ${response.status}`);
+  },
+  async uploadImage() {
+      try {
+        const data = {
+          "id": 0,
+          "category_id": 2,
+          "blob": this.selectedImageURL.split(',')[1]
         }
-
-        const data = await response.json();
-        return data.imageId; 
-    } catch (error) {
+        const response = await axios.post('/api/v1/Images', data);
+        console.log("response",response)
+        return response.data.id;
+      } catch (error) {
         console.error('Error uploading image:', error);
-        throw error; 
-    }
-},
+        throw error;
+      }
+    },
     handleImageChange(event) {
       const file = event.target.files[0];
 
@@ -183,40 +186,83 @@
       reader.readAsDataURL(file);
     },
     async sendCleaned() {
-      try {
-        const imageId = await this.uploadImage();
+  try {
+    const imageId = await this.uploadImage();
+    const userId = this.getUser.userId;
 
-        const response = await fetch(`/api/v1/Activities/UpdateCleanImagesId/${this.activity.id}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ cleanImagesId: imageId }),
-        });
+    const imageIdsArray = Array.isArray(imageId) ? imageId : [imageId];
 
-        if (!response.ok) {
-          alert("No published");
-          throw new Error(`Network response was not ok, status: ${response.status}`);
-        }
+    imageIdsArray.push(userId);
 
-        const data = await response.json();
-        alert("published successfully")
-      } catch (error) {
-        console.error('Error publishing activity:', error);
+    const response = await fetch(`/api/v1/Clean/UpdateCleanImagesId/${this.clean.id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(imageIdsArray),
+    });
+
+    if (!response.ok) {
+      alert("Not published");
+      throw new Error(`Network response was not ok, status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    alert("Published successfully");
+  } catch (error) {
+    console.error('Error publishing clean:', error);
+    alert("Published successfully");
+  }
+},
+    async getImageUrl(id) {
+    try {             
+      const response = await axios.get(`/api/v1/Images/GetImageBlobById/${id}`);
+      this.imageUrl = `data:image/jpeg;base64,${response.data}`;
+    } catch (error) {
+      console.error('Error fetching image:', error);
+    }
+  },
+  async loadProfileImage(userId) {
+  try {
+    const response = await axios.get(`/api/v1/Images/GetImageIdByUserId/${userId}`);
+    const imageId = response.data;
+    const response2 = await axios.get(`/api/v1/Images/GetImageBlobById/${imageId}`);
+    const imageData = response2.data;
+    return `data:image/jpeg;base64,${imageData}`;
+  } catch (error) {
+    console.error('Erreur lors du chargement de l\'image de profil :', error);
+    return null;
+  }
+},
+async getUsername(userId) {
+  try {
+    if (userId) {
+      const response = await axios.get(`/api/v1/Activities/GetUserName/${userId}`);
+      if (response.status == 200) {
+        return response.data;
       }
-    },
-      async fetchActivityDetails(id) {
+    }
+    return 'Utilisateur inconnu';
+  } catch (error) {
+    console.error('Erreur lors de la récupération du nom d\'utilisateur :', error);
+    return 'Utilisateur inconnu';
+  }
+},
+      async fetchcleanDetails(id) {
         try {
-          const response = await fetch(`/api/v1/Activities/${id}`);
+          const response = await fetch(`/api/v1/clean/${id}`);
   
           if (!response.ok) {
             throw new Error(`Network response was not ok, status: ${response.status}`);
           }
   
           const data = await response.json();
-          this.activity = data;
+          this.clean = data;
+          await this.getImageUrl(this.clean.imagesId);
+          this.imageProfileUrl = await this.loadProfileImage(this.clean.userId);
+          this.username = await this.getUsername(this.clean.userId);
         } catch (error) {
-          console.error('Error fetching activity details:', error);
+          console.error('Error fetching clean details:', error);
         } finally {
           this.loading = false;
         }
@@ -232,7 +278,7 @@
   background-color: #34CF1D;
 }
 
-.activity-name {
+.clean-name {
   font-size: 16px;
   font-weight: bold;
   color: white;
@@ -241,7 +287,7 @@
 .image-container {
   display: flex;
   flex-direction: column;
-  align-items: center; /* Centrer horizontalement les éléments à l'intérieur du conteneur */
+  align-items: center; 
 }
 
 .submit-button {
@@ -253,8 +299,28 @@
   cursor: pointer;
   text-align: center;
   margin: auto;
+  margin-top: 10px;
+  margin-bottom: 10px;
   width: 150px;
   height: 35px;
+}
+
+.clean-image {
+  width: 350px;
+  height: 200px;
+  margin-right: 10px;
+}
+
+.profile-image {
+  height: 50px;
+  width: 50px;
+  margin: 15px
+}
+
+.profile{
+  display: flex;
+  align-items: center;
+  justify-content: center; 
 }
 
 </style>

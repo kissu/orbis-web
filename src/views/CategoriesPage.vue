@@ -62,6 +62,7 @@ export default {
   padding: 50px 0px;
   text-align: center;
 }
+
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
@@ -76,6 +77,7 @@ export default {
   margin: 0 10px;
   width: 350px;
   cursor: pointer;
+  margin: 50px;
 }
 
 .category-image {

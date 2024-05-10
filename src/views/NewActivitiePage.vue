@@ -103,6 +103,7 @@
 <script>
 
 import axios from 'axios';
+import { mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -124,6 +125,9 @@ export default {
   },
   mounted() {
     this.fetchCategories();
+  },
+  computed: {
+    ...mapGetters(['getUser']),
   },
   methods: {
     async uploadImage() {
@@ -167,7 +171,8 @@ export default {
     async publishActivity() {
       try {
         const imageId = await this.uploadImage();
-
+        const userId = this.getUser.userId;
+        this.newActivity.userId = userId;
         this.newActivity.image_id = imageId;
         this.newActivity.categoriesId = this.newActivity.categoryId;
 
@@ -198,6 +203,7 @@ export default {
 <style scoped>
 .main-container {
   background-color: #fdb213;
+  text-align: center;
 }
 
 .upload-icon {

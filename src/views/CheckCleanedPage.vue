@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="clean-class">
       <div v-if="loading" class="loading">
         <lottie :options="defaultOptions" :width="200" :height="200" />
       </div>
@@ -38,6 +38,7 @@
         cleanWithCleanImagesId: [],
         loading: true,
         imageUrls: {}, 
+        test: []
         };
     },
     mounted() {
@@ -66,16 +67,28 @@
         clean.cleanImagesId[0] !== 0 
     );
     },
-    async getImageUrl(id) {
-  try {             
-    const response = await axios.get(`/api/v1/Images/GetImageBlobById/${id}`);
-    if (response.status === 200) {
-      this.imageUrls[id] = `data:image/jpeg;base64,${response.data}`;
-    } else {
-      console.error('Failed to fetch image:', response.statusText);
+    async getImageUrl(idOrArray) {
+  if (Array.isArray(idOrArray)) {
+    this.test = idOrArray
+    await this.getImageUrlFromArray(idOrArray);
+  } else {
+    try {             
+      const response = await axios.get(`/api/v1/Images/GetImageBlobById/${idOrArray}`);
+      if (response.status === 200) {
+        this.imageUrls[this.test] = `data:image/jpeg;base64,${response.data}`;
+      } else {
+        console.error('Failed to fetch image:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error fetching image:', error);
     }
-  } catch (error) {
-    console.error('Error fetching image:', error);
+  }
+},
+async getImageUrlFromArray(array) {
+  if (Array.isArray(array) && array.length > 0) {
+    await this.getImageUrl(array[0]);
+  } else {
+    console.error('Invalid array or empty array provided.');
   }
 },
       async Clean(id) {
@@ -108,6 +121,10 @@
 
 .invisible {
   display: none;
+}
+
+.clean-class{
+  text-align: center;
 }
 
 </style>

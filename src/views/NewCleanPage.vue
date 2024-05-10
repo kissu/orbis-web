@@ -57,6 +57,7 @@
 <script>
 
 import axios from 'axios';
+import { mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -71,6 +72,9 @@ export default {
         endDate: "",
       },
     };
+  },
+  computed: {
+    ...mapGetters(['getUser']),
   },
   methods: {
     async uploadImage() {
@@ -102,7 +106,8 @@ export default {
     async publishClean() {
       try {
         const imageId = await this.uploadImage();
-
+        const userId = this.getUser.userId;
+        this.newClean.userId = userId;
         this.newClean.imageId = imageId;
 
         const response = await fetch('/api/v1/Clean', {
@@ -132,6 +137,7 @@ export default {
 <style scoped>
 .main-container {
   background-color: #34CF1D;
+  text-align: center;
 }
 
 .upload-icon {

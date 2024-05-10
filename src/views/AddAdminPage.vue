@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="admin-class">
       <h1>Set User as Admin</h1>
       <input v-model="email" type="email" placeholder="User's email">
       <button @click="setAdmin">Set as Admin</button>
@@ -38,3 +38,10 @@
   }
   </script>
   
+  <style scoped>
+
+.admin-class{
+  text-align: center;
+}
+
+</style>

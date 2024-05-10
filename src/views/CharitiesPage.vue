@@ -8,6 +8,12 @@
     <div v-if="loading" class="loading">
       <lottie :options="defaultOptions" :width="200" :height="200" />
     </div>
+    <div class="col-lg-3">
+      <select v-model="selectedCategoryId" @change="filterByCategory" class="category-picker form-select">
+          <option value="">Categories</option>
+          <option v-for="category in categories" :key="category.id" :value="category.id">{{ category.name }}</option>
+        </select>
+      </div>
     <ul v-if="!loading" class="charities-list">
       <li v-for="charities in this.charities" :key="charities.id" @click="goTocharitiesDetails(charities.id)">
         <div class="charities-item">
@@ -30,7 +36,7 @@ import { defineComponent } from 'vue';
 import Lottie from 'vue-lottie/src/lottie.vue';
 import animationData from "@/assets/animations/loading.json";
 import SearchBar from '@/components/SearchBar.vue';
-
+import axios from 'axios';
 
 export default defineComponent({
   components: {
@@ -45,47 +51,69 @@ export default defineComponent({
         charities: [],
         loading: true,
         appIconPath: '/src/images/ic_add.png',
+        selectedCategoryId: '', 
+        categories: [ 
+        { id: 2, name: 'Poverty' },
+        { id: 7, name: 'Ecology' },
+        { id: 8, name: 'Health' },
+        { id: 9, name: 'Animals' },
+        { id: 10, name: 'Food' },
+      ],
       };
     },
     computed: {
       ...mapGetters(['getUser']),
     },
     mounted() {
-      this.fetchcharities();
+      this.fetchCharities();
     },
     methods: {
-      async fetchcharities() {
-        try {
-          const response = await fetch('/api/v1/charities/all');
-  
-          if (!response.ok) {
-            throw new Error(`Network response was not ok, status: ${response.status}`);
-          }
-  
-          const userId = this.getUser.userId;
-          const userResponse = await fetch(`/api/v1/Users/GetUser/${userId}`);
-          if (!userResponse.ok) {
-            throw new Error(`Failed to fetch user data, status: ${userResponse.status}`);
-          }
-          const userData = await userResponse.json();
-          const blockedUserIds = userData?.Blocked_Users?.map(user => user.id) || [];
+      async fetchCharities() {
+  try {
+    const axiosResponse = await axios.get('/api/v1/Charities/all');
+    const data = axiosResponse.data;
 
-          const data = await response.json();
-          
-          this.charities = data.filter(charities => {
-            return !blockedUserIds.includes(charities.UserId) && charities.Available !== false;
-          });
-        } catch (error) {
-          console.error('Error fetching charities:', error);
-        } finally {
-          this.loading = false;
-        }
-      },
+    const userId = this.getUser.userId;
+
+    const userResponse = await fetch(`/api/v1/Users/GetUser/${userId}`);
+    if (!userResponse.ok) {
+      throw new Error(`Failed to fetch user data, status: ${userResponse.status}`);
+    }
+    const userData = await userResponse.json();
+    const blockedUserIds = userData?.Blocked_Users?.map(user => user.id) || [];
+
+    this.charities = data.filter(charities => {
+      return !blockedUserIds.includes(charities.UserId) && charities.Available !== false;
+    });
+  } catch (error) {
+    console.error('Error fetching charities:', error);
+    await this.fetchCharitiesWithoutUserFilter();
+  } finally {
+    this.loading = false;
+  }
+},
+async fetchCharitiesWithoutUserFilter() {
+  try {
+    const axiosResponse = await axios.get('/api/v1/Charities/all');
+    const data = axiosResponse.data;
+
+    this.charities = data.filter(charities => charities.Available !== false);
+  } catch (error) {
+    console.error('Error fetching charities without user filter:', error);
+  } finally {
+    this.loading = false;
+  }
+  },
       goTocharitiesDetails(id) {
         this.$router.push({ name: 'donationdetails', params: { id } });
       },
       addClicked() {
       this.$router.push('/newdonation'); 
+      },
+      filterByCategory() {
+      if (this.selectedCategoryId !== '') {
+        this.charities = this.charities.filter(charitie => charitie.categoriesId === this.selectedCategoryId);
+      } 
       },
       async getImageUrl(id) {
       try {             

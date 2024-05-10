@@ -10,7 +10,6 @@
         horizontalOptions="center"
         @click="sosClicked" />
     </div>
-
     <audio ref="audioPlayer" :src="audioFilePath" preload="auto"></audio>
 
     <button @click="configureSOS" class="sos-button">Add SOS Number</button>
@@ -37,6 +36,7 @@ import { defineComponent } from 'vue';
 import Lottie from 'vue-lottie/src/lottie.vue';
 import animationData from "@/assets/animations/SOS.json";
 import { Plugins } from '@capacitor/core';
+import { mapGetters } from 'vuex';
 
 const { Geolocation, Modals, Storage } = Plugins;
 
@@ -59,55 +59,53 @@ export default defineComponent({
       audioRecorder: null,
     };
   },
+  computed: {
+    ...mapGetters(['getUser']),
+  },
   methods: {
     async sosClicked() {
-      this.sosActivate = !this.sosActivate;
+  this.sosActivate = !this.sosActivate;
 
-      if (this.sosActivate) {
-        this.audioManager = new AudioManager();
-        this.audioRecorder = this.audioManager.CreateRecorder();
-        await this.audioRecorder.StartAsync();
+  if (this.sosActivate) {
+    try {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const sosMessage = {
+            myLatitude: position.coords.latitude,
+            myLongitude: position.coords.longitude,
+            PhoneNumbers: this.SOSNumbersList
+          };
+
+          fetch('/api/v1/Users/SendSOSMessages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(sosMessage)
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Failed to send SOS messages, status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(responseData => {
+            console.log('SOS messages sent successfully:', responseData);
+          })
+          .catch(error => {
+            console.error('Error sending SOS messages:', error);
+          });
+        });
       } else {
-        /*if (this.audioRecorder && this.audioRecorder.IsRecording) {
-          await this.audioRecorder.StopAsync();
-          this.filePath = '/recorded_audio.wav'; 
-          this.audioFilePath = this.filePath;
-          this.audioPlayer.src = this.audioFilePath;
-          this.audioPlayer.play();
-          this.$refs.audioPlayer.style.display = 'block';*/
-
-          //}
-        }
-        await this.sendTwilioMessagesToNearbyUsers();
-    },
-  async sendTwilioMessagesToNearbyUsers() {
-  const TWILIO_ACCOUNT_SID = 'ACe31235f13fd304e2ecba1c22cf12cd80';
-  const TWILIO_AUTH_TOKEN = '706a837c91b616f2325d1e7306b7250a';
-
-  try {
-    TwilioClient.Init(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-
-    const myLatitude = 554;
-    const myLongitude = 4545;
-
-    const nearbyUsers = await this.getNearbyUsers(myLatitude, myLongitude);
-
-    for (const user of nearbyUsers) {
-      const cleanedNumber = user.trim('"');
-      const toPhoneNumber = new PhoneNumber(cleanedNumber);
-
-      const message = MessageResource.Create({
-        to: toPhoneNumber,
-        from: new PhoneNumber('+16592765399'), 
-        body: `There is a SOS near ${myLatitude}, ${myLongitude}`,
-      });
-
-      console.log(`Message sent to ${cleanedNumber}: ${message.Sid}`);
+        console.error("La géolocalisation n'est pas supportée par ce navigateur.");
+      }
+    } catch (error) {
+      console.error('Error sending SOS messages:', error);
     }
-  } catch (error) {
-    console.error('Error sending Twilio messages:', error);
+  } else {
   }
-},
+}
+,
 async reverseGeocode(latitude, longitude) {
   try {
     const coordinates = { latitude, longitude };
@@ -124,50 +122,11 @@ async reverseGeocode(latitude, longitude) {
     return 'Address not found';
   }
 },
-async getNearbyUsers(latitude, longitude) {
-  const userId = 171;
-
-  try {
-    const response = await fetch(`/api/v1/Users/GetAllUsers`);
-    if (!response.ok) {
-      throw new Error(`Network response was not ok, status: ${response.status}`);
-    }
-    const data = await response.json();
-    const nearbyUsers = [];
-
-    for (const user of data) {
-      if (user.UserId !== userId && user.Latitude && user.Longitude) {
-        const distance = this.calculateDistance(latitude, longitude, user.Latitude, user.Longitude);
-        if (distance < 1000) {
-          const address = await this.reverseGeocode(user.Latitude, user.Longitude);
-          user.address = address;
-          nearbyUsers.push(user);
-        }
-      }
-    }
-    return nearbyUsers;
-  } catch (error) {
-    console.error('Error fetching nearby users:', error);
-    return [];
-  }
-},
-calculateDistance(lat1, lon1, lat2, lon2) {
-  const dLat = (lat2 - lat1) * (Math.PI / 180);
-  const dLon = (lon2 - lon1) * (Math.PI / 180);
-  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-          Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
-          Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const distance = 6371 * c * 1000; 
-
-  return distance;
-},
   async updateSOSNumber(numbers) {
-    //const loginUserId = parseInt(await Storage.get({ key: 'UserId' }), 10);
-    const loginUserId = 171;
+    const userId = this.getUser.userId;
 
     try {
-      const response = await fetch(`/api/v1/Users/UpdateSOSNumber/${loginUserId}/${numbers}`, {
+      const response = await fetch(`/api/v1/Users/UpdateSOSNumber/${userId}/${numbers}`, {
         method: 'PUT',
       });
 
@@ -178,9 +137,33 @@ calculateDistance(lat1, lon1, lat2, lon2) {
       console.error('Error updating SOS number:', error);
     }
   },
+  async displayNumbers() {
+  try {
+    this.isLoading = true;
+
+    const userId = this.getUser.userId;
+
+    const response = await fetch(`/api/v1/Users/GetUserSOSNumbers/${userId}`);
+    
+    if (response.ok) {
+      const sosNumbers = await response.json();
+
+      sosNumbers.forEach(number => {
+        const cleanedNumber = number.trim('"');
+        this.SOSNumbersList.push(cleanedNumber);
+      });
+    } else {
+      throw new Error(`Network response was not ok, status: ${response.status}`);
+    }
+  } catch (error) {
+    console.error('Error fetching SOS numbers:', error);
+  } finally {
+    this.isLoading = false;
+  }
+}
+
   },
   mounted() {
-    this.initializeSwitchToggled();
     this.displayNumbers();
   },
 });
@@ -189,6 +172,7 @@ calculateDistance(lat1, lon1, lat2, lon2) {
 <style scoped>
 .main-container {
   background-color: red;
+  text-align: center;
 }
 
 .number {

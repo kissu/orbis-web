@@ -4,6 +4,7 @@
       <button class="setting-button" @click="privacyClicked">Privacy</button>
       <button class="setting-button" @click="aboutClicked">About</button>
       <button class="setting-button" @click="helpClicked">Help</button>
+      <button class="setting-button" @click="blockedClicked">Blocked</button>
     </div>
   </template>
   
@@ -35,8 +36,8 @@ export default defineComponent({
       helpClicked() {
         this.$router.push('/help');
       },
-      showInterstitial() {
-        console.log('Show Interstitial Clicked');
+      blockedClicked() {
+        this.$router.push('/blocked');
       },
     },
   });

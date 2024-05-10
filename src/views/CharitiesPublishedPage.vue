@@ -15,6 +15,8 @@
                 <div class="charitie-details">
                   <div class="charitie-name">{{ charitie.name }}</div>
                   <div class="charitie-date">{{ formatDate(charitie.start_date) }}</div>
+                  <img :src="`src/images/update.png`" class="updatd-image" @click="updateCharitie(charitie.id)"/>
+                  <img :src="`src/images/delete.png`" class="delete-image" @click="deleteCharitie(charitie.id)"/>
                 </div>
               </div>
             </li>
@@ -30,7 +32,6 @@ import { mapGetters } from 'vuex';
 import { defineComponent } from 'vue';
 import Lottie from 'vue-lottie/src/lottie.vue';
 import animationData from "@/assets/animations/loading.json";
-import SearchBar from '@/components/SearchBar.vue';
 import axios from 'axios';
 
 export default defineComponent({
@@ -76,6 +77,24 @@ export default defineComponent({
     },
     goTocharitieDetails(id) {
       this.$router.push({ name: 'charitiesdetails', params: { id } });
+    },
+    updateCharitie(id) {
+      this.$router.push({ name: 'updatecharitie', params: { id } });
+    },
+    async deleteCharitie(charitieId) {
+      try {
+        const response = await axios.delete(`/api/v1/Charities/${charitieId}`);
+
+        if (response.status === 200) {
+          await this.fetchActivities();
+          alert("Charitie deleted successfully");
+        } else {
+          alert("Failed to delete charitie");
+        }
+      } catch (error) {
+        console.error('Error deleting charitie:', error);
+        alert("An error occurred while deleting charitie");
+      }
     },
     formatDate(date) {
       return date; 

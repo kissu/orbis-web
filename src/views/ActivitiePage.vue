@@ -155,11 +155,11 @@ export default defineComponent({
     addClicked() {
       this.$router.push('/newactivitie'); 
     },
-    async fetchActivities() {
-    try {
+  async fetchActivities() {
+  try {
+    const axiosResponse = await axios.get('/api/v1/Activities/all');
+    const data = axiosResponse.data;
 
-    const response = await axios.get('/api/v1/Activities/all');
-    
     const userId = this.getUser.userId;
     const userResponse = await fetch(`/api/v1/Users/GetUser/${userId}`);
     if (!userResponse.ok) {
@@ -168,16 +168,111 @@ export default defineComponent({
     const userData = await userResponse.json();
     const blockedUserIds = userData?.Blocked_Users?.map(user => user.id) || [];
 
-    const data = await response?.data;
-    console.log("data",data);
-    this.activities = data.filter(activity => {
-      return !blockedUserIds.includes(activity.UserId) && activity.Available !== false;
-    });
+    if (navigator.geolocation) {
+      for (const activity of data) {
+        const location = activity.location;
+        const coordinates = await this.geocodeLocation(location);
+        activity.latitude = coordinates.latitude;
+        activity.longitude = coordinates.longitude;
+      }
+
+      navigator.geolocation.getCurrentPosition(position => {
+        const userLatitude = position.coords.latitude;
+        const userLongitude = position.coords.longitude;
+
+        data.forEach(activity => {
+          const activityLatitude = activity.latitude;
+          const activityLongitude = activity.longitude;
+          activity.distance = this.calculateDistance(userLatitude, userLongitude, activityLatitude, activityLongitude);
+        });
+
+        data.sort((a, b) => a.distance - b.distance);
+        this.activities = data.filter(activity => {
+          return !blockedUserIds.includes(activity.UserId) && activity.Available !== false;
+        });
+      });
+    } else {
+      console.warn("Geolocation is not supported.");
+      this.activities = data.filter(activity => {
+        return !blockedUserIds.includes(activity.UserId) && activity.Available !== false;
+      });
+    }
   } catch (error) {
-    console.error('Error fetching activities:', error);
+    console.error('Erreur lors de la récupération des activités:', error);
+    await this.fetchActivitiesWithoutUserFilter();
   } finally {
     this.loading = false;
   }
+},
+async fetchActivitiesWithoutUserFilter() {
+  try {
+    const axiosResponse = await axios.get('/api/v1/Activities/all');
+    const data = axiosResponse.data;
+
+    if (navigator.geolocation) {
+      for (const activity of data) {
+        const location = activity.location;
+        const coordinates = await this.geocodeLocation(location);
+        activity.latitude = coordinates.latitude;
+        activity.longitude = coordinates.longitude;
+      }
+
+      navigator.geolocation.getCurrentPosition(position => {
+        const userLatitude = position.coords.latitude;
+        const userLongitude = position.coords.longitude;
+
+        data.forEach(activity => {
+          const activityLatitude = activity.latitude;
+          const activityLongitude = activity.longitude;
+          activity.distance = this.calculateDistance(userLatitude, userLongitude, activityLatitude, activityLongitude);
+        });
+
+        data.sort((a, b) => a.distance - b.distance);
+        this.activities = data;
+      });
+    } else {
+      console.warn("Geolocation is not supported.");
+      this.activities = data;
+    }
+  } catch (error) {
+    console.error('Erreur lors de la récupération des activités sans filtre utilisateur:', error);
+  } finally {
+    this.loading = false;
+  }
+},
+  async geocodeLocation(location) {
+  try {
+    const cleanedLocation = location.trim();
+    const response = await axios.get(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURI(cleanedLocation)}`);
+    const data = response.data;
+    if (data && data.length > 0) {
+      const firstResult = data[0];
+      return { 
+        latitude: parseFloat(firstResult.lat),
+        longitude: parseFloat(firstResult.lon)
+      };
+    } else {
+      throw new Error('Aucune coordonnée trouvée pour cette adresse');
+    }
+  } catch (error) {
+    console.error('Erreur lors de la géocodage de l\'adresse:', error);
+    return { latitude: 0, longitude: 0 }; 
+  }
+},
+    calculateDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371; 
+      const dLat = this.toRadians(lat2 - lat1);
+      const dLon = this.toRadians(lon2 - lon1);
+      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                Math.cos(this.toRadians(lat1)) * Math.cos(this.toRadians(lat2)) *
+                Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      const d = R * c; 
+      return d;
+    },
+
+    toRadians(degrees) {
+      return degrees * Math.PI / 180;
     },
     goToActivityDetails(id) {
       this.$router.push({ name: 'activitiesdetails', params: { id } });

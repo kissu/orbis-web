@@ -7,7 +7,7 @@
             <lottie :options="defaultOptions" :width="200" :height="200" />
           </div>
           <ul v-if="!loading" class="activity-list">
-            <li v-for="activity in this.activities" :key="activity.id" @click="goToActivityDetails(activity.id)">
+            <li v-for="activity in activities" :key="activity.id">
               <div class="activity-item">
                 <div v-if="activity.images.blob" class="activity-image-container">
                   <img :src="`data:image/jpeg;base64,${activity.images.blob}`" alt="Activity Image" class="activity-image" />
@@ -15,6 +15,8 @@
                 <div class="activity-details">
                   <div class="activity-name">{{ activity.name }}</div>
                   <div class="activity-date">{{ formatDate(activity.start_date) }}</div>
+                  <img :src="`src/images/update.png`" class="updatd-image" @click="updateActivity(activity.id)"/>
+                  <img :src="`src/images/delete.png`" class="delete-image" @click="deleteActivity(activity.id)"/>
                 </div>
               </div>
             </li>
@@ -30,7 +32,6 @@ import { mapGetters } from 'vuex';
 import { defineComponent } from 'vue';
 import Lottie from 'vue-lottie/src/lottie.vue';
 import animationData from "@/assets/animations/loading.json";
-import SearchBar from '@/components/SearchBar.vue';
 import axios from 'axios';
 
 export default defineComponent({
@@ -42,7 +43,6 @@ export default defineComponent({
       defaultOptions: {
         animationData: animationData,
       },
-      imageUrl: '', 
       activities: [],
       loading: true,
     };
@@ -54,28 +54,38 @@ export default defineComponent({
     this.fetchActivities();
   },
   methods: {
-  async getImageUrl(id) {
-  try {             
-    const response = axios.get(`/api/v1/Images/GetImageBlobById/${id}`);
-    this.imageUrl = `data:image/jpeg;base64,${response.data}`;
-  } catch (error) {
-    console.error('Error fetching image:', error);
-  }
-  },
     async fetchActivities() {
-    try {
-    const userId = this.getUser.userId;
-    const response = await axios.get(`/api/v1/Activities/all`);
-    const data = await response?.data;
-    this.activities = data.filter(activity => activity.userId === userId);
-  } catch (error) {
-    console.error('Error fetching activities:', error);
-  } finally {
-    this.loading = false;
-  }
+      try {
+        const userId = this.getUser.userId;
+        const response = await axios.get(`/api/v1/Activities/all`);
+        const data = response.data;
+        this.activities = data.filter(activity => activity.userId === userId);
+      } catch (error) {
+        console.error('Error fetching activities:', error);
+      } finally {
+        this.loading = false;
+      }
     },
     goToActivityDetails(id) {
       this.$router.push({ name: 'activitiesdetails', params: { id } });
+    },
+    updateActivity(id) {
+      this.$router.push({ name: 'updateactivitie', params: { id } });
+    },
+    async deleteActivity(activityId) {
+      try {
+        const response = await axios.delete(`/api/v1/Activities/${activityId}`);
+
+        if (response.status === 200) {
+          await this.fetchActivities();
+          alert("Activity deleted successfully");
+        } else {
+          alert("Failed to delete activity");
+        }
+      } catch (error) {
+        console.error('Error deleting activity:', error);
+        alert("An error occurred while deleting activity");
+      }
     },
     formatDate(date) {
       return date; 
@@ -83,6 +93,7 @@ export default defineComponent({
   },
 });
 </script>
+
 
 
 <style scoped>

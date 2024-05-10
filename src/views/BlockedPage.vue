@@ -6,15 +6,13 @@
       <div v-if="loading" class="loading">
         <lottie :options="defaultOptions" :width="200" :height="200" />
       </div>
-      <ul v-if="!loading" class="message-list">
-        <li v-for="message in messages" :key="message.id" @click="goToGroupMessage(message.id)">
-          <div class="message-item">
-            <div v-if="message.images.blob" class="message-image-container">
-            <img :src="`data:image/jpeg;base64,${message.images.blob}`" alt="message Image" class="message-image" />
+      <ul v-if="!loading" class="blocked-list">
+        <li v-for="block in blocked" :key="blocked.id" @click="goToGroupblocked(blocked.id)">
+          <div class="blocked-item">
+            <div class="blocked-details">
+              <div class="blocked-name">{{ block }}</div>
             </div>
-            <div class="message-details">
-              <div class="message-name">{{ message.name }}</div>
-            </div>
+            <button @click="removeBlockedUser(block)" class="remove-button">Remove</button>
           </div>
         </li>
       </ul>
@@ -37,7 +35,7 @@ import { mapGetters } from 'vuex';
         defaultOptions: {
           animationData: animationData,
         },
-        messages: [],
+        blocked: [],
         loading: true,
         appIconPath: '/src/images/ic_add.png',
       };
@@ -46,30 +44,38 @@ import { mapGetters } from 'vuex';
       ...mapGetters(['getUser']),
     },
     mounted() {
-      this.fetchmessages();
+      this.fetchblocked();
     },
     methods: {
-      async fetchmessages() {
+      async fetchblocked() {
         try {
           const userId = this.getUser.userId;
-          const response = await fetch(`/api/v1/Activities/GetJoinedActivitiesByUserId/${userId}`);
+          const response = await fetch(`/api/v1/Users/BlockedUsers/${userId}`);
           if (!response.ok) {
             throw new Error(`Network response was not ok, status: ${response.status}`);
           }
           const data = await response.json();
-          this.messages = data;
+          this.blocked = data;
         } catch (error) {
-          console.error('Error fetching messages:', error);
+          console.error('Error fetching blocked:', error);
         } finally {
           this.loading = false;
         }
       },
-      goToGroupMessage(id) {
-        this.$router.push({ name: 'groupmessage', params: { id } });
-      },
-      formatDate(date) {
-        return date; 
-      },
+      async removeBlockedUser(name) {
+      try {
+        const userId = this.getUser.userId;
+        const response = await fetch(`/api/v1/Users/UnblockUser/${userId}/${name}`, {
+          method: 'DELETE'
+        });
+        if (!response.ok) {
+          throw new Error(`Failed to unblock user, status: ${response.status}`);
+        }
+        this.blocked = this.blocked.filter(user => user !== name);
+      } catch (error) {
+        console.error('Error removing blocked user:', error);
+      }
+    },
       async getImageUrl(id) {
       try {             
         const response = axios.get(`/api/v1/Images/GetImageBlobById/${id}`);
@@ -108,34 +114,34 @@ import { mapGetters } from 'vuex';
     margin-top: 20px;
   }
   
-  .message-list {
+  .blocked-list {
     list-style: none;
     padding: 0;
   }
   
-  .message-item {
+  .blocked-item {
     display: flex;
     align-items: center;
     padding: 10px;
     border-bottom: 1px solid #ddd;
   }
   
-  .message-image {
+  .blocked-image {
     width: 150px;
     height: 100px;
     margin-right: 10px;
   }
   
-  .message-details {
+  .blocked-details {
     flex-grow: 1;
   }
   
-  .message-name {
+  .blocked-name {
     font-size: 16px;
     font-weight: bold;
   }
   
-  .message-date {
+  .blocked-date {
     font-size: 12px;
     color: white;
   }

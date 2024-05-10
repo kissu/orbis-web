@@ -15,27 +15,31 @@
 
       <div class="input-container">
       <input
-      v-model="userName"
+      v-model="Name"
       type="text"
       placeholder="Enter Name"
       class="input-field"/>
 
     <textarea
-      v-model="information"
-      placeholder="Add information (clothes worn, languages spoken, etc.)"
+      v-model="informations"
+      placeholder="Add informations (clothes worn, languages spoken, etc.)"
       class="editor-field"></textarea>
-        
     </div>
 
+    <div>
+
     <label for="image" class="image-upload">
-          <img v-if="selectedImage" alt="Selected Image"
-            class="upload-icon" />
-          <span v-else>
-            <img src="/src/images/camera.png" alt="Upload Image" class="upload-icon" />
-          </span>
-        </label>
-        <input type="file" id="image" @change="handleImageChange" accept="image/*" class="input"
-          style="display: none;" />
+        <img v-if="selectedImage" :src="selectedImageURL" alt="Selected Image"
+          class="upload-icon" />
+        <span v-else>
+          <img src="/src/images/camera.png" alt="Upload Image" class="upload-icon" />
+        </span>
+      </label>
+      <input type="file" id="image" @change="handleImageChange" accept="image/*" class="input"
+        style="display: none;" />
+    </div>
+
+    <button @click="stopClicked" class="stop-button">Stop</button>
 
 </div>
   </template>
@@ -45,7 +49,8 @@
   import Lottie from 'vue-lottie/src/lottie.vue';
   import animationData from "@/assets/animations/Gone.json";
   import { Plugins } from '@capacitor/core';
-  
+  import axios from 'axios';
+
   const { Geolocation, Modals, Storage } = Plugins;
   
   export default defineComponent({
@@ -64,8 +69,8 @@
         audioManager: null,
         filePath: '',
         audioRecorder: null,
-        userName: "",
-        information: "", 
+        Name: "",
+        informations: "", 
         selectedImage: null,
         selectedImageURL: null,
       };
@@ -73,52 +78,92 @@
     methods: {
       async GoneClicked() {
         this.GoneActivate = !this.GoneActivate;
+        this.showStopButton = true; 
   
         if (this.GoneActivate) {
-          this.audioManager = new AudioManager();
-          this.audioRecorder = this.audioManager.CreateRecorder();
-          await this.audioRecorder.StartAsync();
-        } else {
-          /*if (this.audioRecorder && this.audioRecorder.IsRecording) {
-            await this.audioRecorder.StopAsync();
-            this.filePath = '/recorded_audio.wav'; 
-            this.audioFilePath = this.filePath;
-            this.audioPlayer.src = this.audioFilePath;
-            this.audioPlayer.play();
-            this.$refs.audioPlayer.style.display = 'block';*/
-  
-            //}
-          }
-          await this.sendTwilioMessagesToNearbyUsers();
-      },
-    async sendTwilioMessagesToNearbyUsers() {
-    const TWILIO_ACCOUNT_SID = 'ACe31235f13fd304e2ecba1c22cf12cd80';
-    const TWILIO_AUTH_TOKEN = '706a837c91b616f2325d1e7306b7250a';
-  
-    try {
-      TwilioClient.Init(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-  
-      const myLatitude = 554;
-      const myLongitude = 4545;
-  
-      const nearbyUsers = await this.getNearbyUsers(myLatitude, myLongitude);
-  
-      for (const user of nearbyUsers) {
-        const cleanedNumber = user.trim('"');
-        const toPhoneNumber = new PhoneNumber(cleanedNumber);
-  
-        const message = MessageResource.Create({
-          to: toPhoneNumber,
-          from: new PhoneNumber('+16592765399'), 
-          body: `There is a Gone near ${myLatitude}, ${myLongitude}`,
+          try {
+            const imageId = await this.uploadImage();
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const goneMessage = {
+            myLatitude: position.coords.latitude,
+            myLongitude: position.coords.longitude,
+            Name: this.Name,
+            Informations: this.informations,
+            ImageId: imageId
+          };
+
+          fetch('/api/v1/Users/SendGoneMessages', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(goneMessage)
+          })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Failed to send SOS messages, status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(responseData => {
+            console.log('SOS messages sent successfully:', responseData);
+          })
+          .catch(error => {
+            console.error('Error sending SOS messages:', error);
+          });
         });
-  
-        console.log(`Message sent to ${cleanedNumber}: ${message.Sid}`);
+      } else {
+        console.error("La géolocalisation n'est pas supportée par ce navigateur.");
       }
     } catch (error) {
-      console.error('Error sending Twilio messages:', error);
+      console.error('Error sending SOS messages:', error);
     }
-  },
+  } else {
+  }
+},
+stopClicked() {
+  const stopMessage = {
+    myLatitude: position.coords.latitude,
+    myLongitude: position.coords.longitude,
+    Name: this.Name,
+    Informations: this.informations,
+    ImageId: 0
+  };
+  fetch('/api/v1/Users/StopGone', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(stopMessage)
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error(`Failed to stop Gone messages, status: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then(responseData => {
+    console.log('Gone messages stopped successfully:', responseData);
+  })
+  .catch(error => {
+    console.error('Error stopping Gone messages:', error);
+  });
+},
+async uploadImage() {
+      try {
+        const data = {
+          "id": 0,
+          "category_id": 2,
+          "blob": this.selectedImageURL.split(',')[1]
+        }
+        const response = await axios.post('/api/v1/Images', data);
+        return response.data.id;
+      } catch (error) {
+        console.error('Error uploading image:', error);
+        throw error;
+      }
+    },
   async reverseGeocode(latitude, longitude) {
     try {
       const coordinates = { latitude, longitude };
@@ -184,26 +229,6 @@
       };
       reader.readAsDataURL(file);
     },
-    async updateGoneNumber(numbers) {
-      //const loginUserId = parseInt(await Storage.get({ key: 'UserId' }), 10);
-      const loginUserId = 171;
-  
-      try {
-        const response = await fetch(`/api/v1/Users/UpdateGoneNumber/${loginUserId}/${numbers}`, {
-          method: 'PUT',
-        });
-  
-        if (!response.ok) {
-          throw new Error(`Network response was not ok, status: ${response.status}`);
-        }
-      } catch (error) {
-        console.error('Error updating Gone number:', error);
-      }
-    },
-    },
-    mounted() {
-      this.initializeSwitchToggled();
-      this.displayNumbers();
     },
   });
   </script>
@@ -211,6 +236,7 @@
   <style scoped>
   .main-container {
     background-color: #1D1B1B;
+    text-align: center;
   }
 
   .Gone-button {
@@ -240,6 +266,20 @@
   flex-direction: column;
   justify-content: center; 
   align-items: center;
+}
+
+.stop-button {
+  width: 150px;
+  margin: 5px;
+  margin-top: 10px; 
+  padding: 5px;
+  background-color: red;
+  color: white;
+}
+
+.upload-icon {
+  max-width: 30%;
+  height: 30%;
 }
   
   </style>

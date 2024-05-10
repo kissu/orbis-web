@@ -17,6 +17,8 @@ import ActivitiesPublishedPage from './views/ActivitiesPublishedPage.vue'
 import CleanPublishedPage from './views/CleanPublishedPage.vue'
 import CharitiesPublishedPage from './views/CharitiesPublishedPage.vue'
 import UpdateActivitiePage from '../views/UpdateActivitiePage.vue'
+import UpdateCleanPage from '../views/UpdateCleanPage.vue'
+import UpdateCharitiePage from '../views/UpdateCharitiePage.vue'
 import AboutPage from '../views/AboutPage.vue'
 import SignInPage from '../views/SignInPage.vue'
 import ApplyPage from '@/views/ApplyPage.vue';
@@ -34,6 +36,7 @@ import NewCleanPage from '@/views/NewCleanPage.vue';
 import Lottie from 'vue-lottie';
 import MessagesPage from '@/views/MessagesPage.vue';
 import GroupMessagePage from '@/views/GroupMessagePage.vue';
+import BlockedPage from '@/views/BlockedPage.vue';
 import AnalysisPage from '@/views/AnalysisPage.vue';
 import AdminPage from '@/views/AdminPage.vue'
 import UsersPage from '@/views/UsersPage.vue'
@@ -46,7 +49,7 @@ app.component('lottie', Lottie);
 
 const routes = [
   { path: '/activities', component: ActivitiePage }, 
-  { path: '/gone', component: GonePage }, 
+  { path: '/gone', component: GonePage, meta: { requiresAuth: true } }, 
   { path: '/logout', component: LogoutPage }, 
   { path: '/settings', component: SettingsPage }, 
   { path: '/privacy', component: PrivacyPage }, 
@@ -61,7 +64,9 @@ const routes = [
   { path: '/activitiespublished', component: ActivitiesPublishedPage, meta: { requiresAuth: true } }, 
   { path: '/cleanpublished', component: CleanPublishedPage, meta: { requiresAuth: true } }, 
   { path: '/charitiespublished', component: CharitiesPublishedPage, meta: { requiresAuth: true } }, 
-  { path: '/update', component: UpdateActivitiePage }, 
+  { path: '/updateactivitie/:id', name: 'updateactivitie', component: UpdateActivitiePage }, 
+  { path: '/updateclean/:id', name: 'updateclean', component: UpdateCleanPage, meta: { requiresAuth: true } }, 
+  { path: '/updatecharitie/:id', name: 'updatecharitie', component: UpdateCharitiePage, meta: { requiresAuth: true } }, 
   { path: '/about', component: AboutPage }, 
   { path: '/signin', component: SignInPage }, 
   { path: '/actions', component: ActionsPage }, 
@@ -74,6 +79,7 @@ const routes = [
   { path: '/newdonation', component: NewDonationPage, meta: { requiresAuth: true }}, 
   { path: '/newclean', component: NewCleanPage }, 
   { path: '/sos', component: SOSPage }, 
+  { path: '/blocked', component: BlockedPage, meta: { requiresAuth: true } }, 
   { path: '/talk', component: TalkPage }, 
   { path: '/charities', component: CharitiesPage }, 
   { path: '/clean', component: CleanPage }, 

@@ -1,8 +1,14 @@
 <template>
   <div class="main-container"> 
     <div class="activity-name">
+      <img :src="this.imageUrl" alt="Activity Image" class="activity-image" />
       <h2>{{ activity.name }}</h2>
       <p>{{ activity.description }}</p>
+    </div>
+
+    <div class="profile">
+      <img :src="imageProfileUrl" alt="Image de profil" class="profile-image" />
+      <h2>{{ username }}</h2>
     </div>
 
     <div>
@@ -28,6 +34,7 @@
 
 <script>
 import { mapGetters } from 'vuex';
+import axios from 'axios';
 
 export default {
   props: ['id'],
@@ -40,7 +47,10 @@ export default {
       likeItemsVisible: true,
       cancelLikeItemsVisible: false,
       joinedItemsVisible: true,
-      cancelJoinItemsVisible: false
+      cancelJoinItemsVisible: false,
+      imageUrl: '', 
+      imageProfileUrl: '',
+      username: ''
     };
   },
   mounted() {
@@ -84,7 +94,6 @@ export default {
         if (response.ok) {
             this.checkLikedAndJoined();
         } else {
-          
         }
     } catch (error) {
         console.error('Erreur lors de la tentative de rejoindre l\'activité:', error);
@@ -157,12 +166,49 @@ export default {
 
         const data = await response.json();
         this.activity = data;
+        await this.getImageUrl(this.activity.imagesId);
+        this.imageProfileUrl = await this.loadProfileImage(this.activity.userId);
+        this.username = await this.getUsername(this.activity.userId);
       } catch (error) {
         console.error('Error fetching activity details:', error);
       } finally {
         this.loading = false;
       }
     },
+    async loadProfileImage(userId) {
+  try {
+    const response = await axios.get(`/api/v1/Images/GetImageIdByUserId/${userId}`);
+    const imageId = response.data;
+    const response2 = await axios.get(`/api/v1/Images/GetImageBlobById/${imageId}`);
+    const imageData = response2.data;
+    return `data:image/jpeg;base64,${imageData}`;
+  } catch (error) {
+    console.error('Erreur lors du chargement de l\'image de profil :', error);
+    return null;
+  }
+},
+async getUsername(userId) {
+  try {
+    if (userId) {
+      const response = await axios.get(`/api/v1/Activities/GetUserName/${userId}`);
+      if (response.status == 200) {
+        return response.data;
+      }
+    }
+    return 'Utilisateur inconnu';
+  } catch (error) {
+    console.error('Erreur lors de la récupération du nom d\'utilisateur :', error);
+    return 'Utilisateur inconnu';
+  }
+},
+    async getImageUrl(id) {
+    try {             
+      const response = await axios.get(`/api/v1/Images/GetImageBlobById/${id}`);
+      this.imageUrl = `data:image/jpeg;base64,${response.data}`;
+    } catch (error) {
+      console.error('Error fetching image:', error);
+    }
+  },
     async toggleReportForm() {
       this.showReportForm = !this.showReportForm;
     },
@@ -234,4 +280,23 @@ export default {
   font-weight: bold;
   color: white;
 }
+
+.activity-image {
+  width: 350px;
+  height: 200px;
+  margin-right: 10px;
+}
+
+.profile-image {
+  height: 50px;
+  width: 50px;
+  margin: 15px
+}
+
+.profile{
+  display: flex;
+  align-items: center;
+  justify-content: center; 
+}
+
 </style>

@@ -17,8 +17,8 @@
 <script>
 export default {
   methods: {
-    acitivitiesjoinedClicked() {
-      this.$router.push('/acitivitiesjoined');
+    activitiesjoinedClicked() {
+      this.$router.push('/activitiesjoined');
     },
     activitiespublishedClicked() {
       this.$router.push('/activitiespublished');

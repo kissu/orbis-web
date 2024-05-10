@@ -7,7 +7,7 @@
             <lottie :options="defaultOptions" :width="200" :height="200" />
           </div>
           <ul v-if="!loading" class="clean-list">
-            <li v-for="clean in this.clean" :key="clean.id" @click="goTocleanDetails(clean.id)">
+            <li v-for="clean in this.clean" :key="clean.id">
               <div class="clean-item">
                 <div v-if="clean.images.blob" class="clean-image-container">
                   <img :src="`data:image/jpeg;base64,${clean.images.blob}`" alt="clean Image" class="clean-image" />
@@ -15,6 +15,8 @@
                 <div class="clean-details">
                   <div class="clean-name">{{ clean.name }}</div>
                   <div class="clean-date">{{ formatDate(clean.start_date) }}</div>
+                  <img :src="`src/images/update.png`" class="updatd-image" @click="updateClean(clean.id)"/>
+                  <img :src="`src/images/delete.png`" class="delete-image" @click="deleteClean(clean.id)"/>
                 </div>
               </div>
             </li>
@@ -30,7 +32,6 @@ import { mapGetters } from 'vuex';
 import { defineComponent } from 'vue';
 import Lottie from 'vue-lottie/src/lottie.vue';
 import animationData from "@/assets/animations/loading.json";
-import SearchBar from '@/components/SearchBar.vue';
 import axios from 'axios';
 
 export default defineComponent({
@@ -76,6 +77,24 @@ export default defineComponent({
     },
     goTocleanDetails(id) {
       this.$router.push({ name: 'cleandetails', params: { id } });
+    },
+    updateClean(id) {
+      this.$router.push({ name: 'updateclean', params: { id } });
+    },
+    async deleteClean(cleanId) {
+      try {
+        const response = await axios.delete(`/api/v1/Clean/${cleanId}`);
+
+        if (response.status === 200) {
+          await this.fetchActivities();
+          alert("Clean deleted successfully");
+        } else {
+          alert("Failed to delete clean");
+        }
+      } catch (error) {
+        console.error('Error deleting clean:', error);
+        alert("An error occurred while deleting clean");
+      }
     },
     formatDate(date) {
       return date; 

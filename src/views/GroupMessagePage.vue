@@ -21,6 +21,9 @@
 </template>
   
   <script>
+
+  import { mapGetters } from 'vuex';
+
   export default {
     data() {
       return {
@@ -35,12 +38,15 @@
     mounted() {
       this.displayMessages();
     },
+    computed: {
+      ...mapGetters(['getUser']),
+    },
     methods: {
       async displayMessages() {
         this.isLoading = true;
   
         try {
-        const response = await fetch(`/api/v1/Activities/GetMessagesContentByActivityId/${this.id=11}`);
+        const response = await fetch(`/api/v1/Activities/GetMessagesContentByActivityId/${this.id}`);
         const data = await response.json();
 
         await Promise.all(data.map(async (message) => {
@@ -64,6 +70,7 @@
       }
     },
     async sendMessage() {
+      const userId = this.getUser.userId;
       if (this.messageToSend.trim() !== "") {
         try {
           const messageResponse = await fetch("/api/v1/Messages", {
@@ -71,8 +78,7 @@
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ content: this.messageToSend, userId: 171 }),
-            //body: JSON.stringify({ content: this.messageToSend, userId: loginUserId }),
+            body: JSON.stringify({ content: this.messageToSend, userId: userId }),
           });
 
           console.log('Response:', await messageResponse.text());
