@@ -20,7 +20,7 @@
   </template>
   
   <script>
-    import Lottie from 'vue-lottie/src/lottie.vue';
+    import Lottie from 'vue3-lottie';
     import animationData from "@/assets/animations/loading.json";
     import { defineComponent } from 'vue';
     import axios from 'axios';

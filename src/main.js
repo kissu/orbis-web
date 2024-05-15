@@ -36,7 +36,7 @@ import CleanPage from '@/views/CleanPage.vue';
 import GonePage from '@/views/GonePage.vue';
 import BlockedPage from '@/views/BlockedPage.vue';
 import NewCleanPage from '@/views/NewCleanPage.vue';
-import Lottie from 'vue-lottie';
+import Vue3Lottie from 'vue3-lottie';
 import MessagesPage from './views/MessagesPage.vue'
 import GroupMessagePage from './views/GroupMessagePage.vue'
 import AnalysisPage from './views/AnalysisPage.vue'
@@ -54,7 +54,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 const app = createApp(App);
 
-app.component('lottie', Lottie);
+app.component('lottie', Vue3Lottie);
 
 app.config.globalProperties.$axios = axios;
 

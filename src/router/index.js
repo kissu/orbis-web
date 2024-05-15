@@ -33,7 +33,7 @@ import ActionsPage from '@/views/ActionsPage.vue';
 import CharitiesPage from '@/views/CharitiesPage.vue';
 import CleanPage from '@/views/CleanPage.vue';
 import NewCleanPage from '@/views/NewCleanPage.vue';
-import Lottie from 'vue-lottie';
+import Vue3Lottie from 'vue3-lottie';
 import MessagesPage from '@/views/MessagesPage.vue';
 import GroupMessagePage from '@/views/GroupMessagePage.vue';
 import BlockedPage from '@/views/BlockedPage.vue';
@@ -45,7 +45,7 @@ import AddAdminPage from '@/views/AddAdminPage.vue';
 import RecoverDonationPage from '@/views/RecoverDonationPage.vue';
 import CheckCleanedPage from '@/views/CheckCleanedPage.vue';
 
-app.component('lottie', Lottie);
+app.component('lottie', Vue3Lottie);
 
 const routes = [
   { path: '/activities', component: ActivitiePage }, 

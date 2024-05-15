@@ -33,7 +33,7 @@
 
 <script>
 import { defineComponent } from 'vue';
-import Lottie from 'vue-lottie/src/lottie.vue';
+import Lottie from 'vue3-lottie';
 import animationData from "@/assets/animations/SOS.json";
 import { Plugins } from '@capacitor/core';
 import { mapGetters } from 'vuex';

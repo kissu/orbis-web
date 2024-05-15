@@ -30,7 +30,7 @@
 <script>
 import { mapGetters } from 'vuex';
 import { defineComponent } from 'vue';
-import Lottie from 'vue-lottie/src/lottie.vue';
+import Lottie from 'vue3-lottie';
 import animationData from "@/assets/animations/loading.json";
 import axios from 'axios';
 

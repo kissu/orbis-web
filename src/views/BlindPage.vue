@@ -1,4 +1,4 @@
-<!-- ActivityList.vue -->
+
 <template>
     <div>
       <h1>Activity List</h1>
