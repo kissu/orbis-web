@@ -14,15 +14,21 @@
 </template>
 
 <script>
+import sosImage from '@/images/sos.png'
+import goneImage from '@/images/gone.png'
+import activitiesImage from '@/images/activities.png'
+import cleanImage from '@/images/ecology.png'
+import charitiesImage from '@/images/donations.png'
+
 export default {
   data() {
     return {
       categories: [
-        { id: 1, name: "SOS", image: "src/images/sos.png", textColor: "darkorange" },
-        { id: 2, name: "Gone", image: "src/images/gone.png", textColor: "darkorange" },
-        { id: 3, name: "Activities", image: "src/images/activities.png", textColor: "darkorange" },
-        { id: 4, name: "Clean", image: "src/images/ecology.png", textColor: "darkorange" },
-        { id: 6, name: "Charities", image: "src/images/donations.png", textColor: "darkorange" },
+        { id: 1, name: "SOS", image: sosImage, textColor: "darkorange" },
+        { id: 2, name: "Gone", image: goneImage, textColor: "darkorange" },
+        { id: 3, name: "Activities", image: activitiesImage, textColor: "darkorange" },
+        { id: 4, name: "Clean", image: cleanImage, textColor: "darkorange" },
+        { id: 6, name: "Charities", image: charitiesImage, textColor: "darkorange" },
       ],
     };
   },
@@ -51,13 +57,13 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: url('src/images/categoriesback.jpg') no-repeat center center fixed;
+  background: url('/src/images/categoriesback.jpg') no-repeat center center fixed;
   background-size: cover;
-  z-index: -1; 
+  z-index: -1;
 }
 
 .category-container {
-  overflow-x: scroll; 
+  overflow-x: scroll;
   white-space: nowrap;
   padding: 50px 0px;
   text-align: center;
@@ -82,7 +88,7 @@ export default {
 
 .category-image {
   height: 470px;
-  flex-shrink: 0; 
+  flex-shrink: 0;
 }
 
 </style>
