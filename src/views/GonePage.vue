@@ -1,7 +1,7 @@
 <template>
     <div class="main-container">
       <div class="Gone-animation" @click="GoneClicked">
-        <lottie
+        <Vue3Lottie
           :options="defaultOptions"
           ref="Gone"
           :isAnimationEnabled="false"
@@ -10,7 +10,7 @@
           horizontalOptions="center"
           @click="GoneClicked" />
       </div>
-  
+
       <audio ref="audioPlayer" :src="audioFilePath" preload="auto"></audio>
 
       <div class="input-container">
@@ -43,19 +43,19 @@
 
 </div>
   </template>
-  
+
   <script>
   import { defineComponent } from 'vue';
-  import Lottie from 'vue-lottie/src/lottie.vue';
+  import Vue3Lottie from 'vue3-lottie'
   import animationData from "@/assets/animations/Gone.json";
   import { Plugins } from '@capacitor/core';
   import axios from 'axios';
 
   const { Geolocation, Modals, Storage } = Plugins;
-  
+
   export default defineComponent({
     components: {
-      Lottie,
+      Vue3Lottie,
     },
     data() {
       return {
@@ -70,7 +70,7 @@
         filePath: '',
         audioRecorder: null,
         Name: "",
-        informations: "", 
+        informations: "",
         selectedImage: null,
         selectedImageURL: null,
       };
@@ -78,8 +78,8 @@
     methods: {
       async GoneClicked() {
         this.GoneActivate = !this.GoneActivate;
-        this.showStopButton = true; 
-  
+        this.showStopButton = true;
+
         if (this.GoneActivate) {
           try {
             const imageId = await this.uploadImage();
@@ -168,12 +168,12 @@ async uploadImage() {
     try {
       const coordinates = { latitude, longitude };
       const result = await Geolocation.reverseGeocode(coordinates);
-  
+
       if (result && result.length > 0) {
         const address = result[0].thoroughfare + ', ' + result[0].locality + ', ' + result[0].countryName;
         return address;
       }
-  
+
       return 'Address not found';
     } catch (error) {
       console.error('Error reverse geocoding:', error);
@@ -182,7 +182,7 @@ async uploadImage() {
   },
   async getNearbyUsers(latitude, longitude) {
     const userId = 171;
-  
+
     try {
       const response = await fetch(`/api/v1/Users/GetAllUsers`);
       if (!response.ok) {
@@ -190,7 +190,7 @@ async uploadImage() {
       }
       const data = await response.json();
       const nearbyUsers = [];
-  
+
       for (const user of data) {
         if (user.UserId !== userId && user.Latitude && user.Longitude) {
           const distance = this.calculateDistance(latitude, longitude, user.Latitude, user.Longitude);
@@ -214,8 +214,8 @@ async uploadImage() {
             Math.cos(lat1 * (Math.PI / 180)) * Math.cos(lat2 * (Math.PI / 180)) *
             Math.sin(dLon / 2) * Math.sin(dLon / 2);
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = 6371 * c * 1000; 
-  
+    const distance = 6371 * c * 1000;
+
     return distance;
   },
   handleImageChange(event) {
@@ -232,7 +232,7 @@ async uploadImage() {
     },
   });
   </script>
-  
+
   <style scoped>
   .main-container {
     background-color: #1D1B1B;
@@ -244,7 +244,7 @@ async uploadImage() {
     color: white;
     padding: 10px;
     border: none;
-    border-radius: 20px; 
+    border-radius: 20px;
     cursor: pointer;
     text-align: center;
     margin: 25px;
@@ -264,14 +264,14 @@ async uploadImage() {
 .input-container {
     display: flex;
   flex-direction: column;
-  justify-content: center; 
+  justify-content: center;
   align-items: center;
 }
 
 .stop-button {
   width: 150px;
   margin: 5px;
-  margin-top: 10px; 
+  margin-top: 10px;
   padding: 5px;
   background-color: red;
   color: white;
@@ -281,6 +281,5 @@ async uploadImage() {
   max-width: 30%;
   height: 30%;
 }
-  
+
   </style>
-  
